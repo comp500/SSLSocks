@@ -2,6 +2,7 @@ package link.infra.sslsocks;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.net.VpnService;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,6 +15,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,8 +42,9 @@ public class MainActivity extends AppCompatActivity {
 	 * The {@link ViewPager} that will host the section contents.
 	 */
 	private ViewPager mViewPager;
-
 	private FloatingActionButton fabAdd;
+	public final int VPN_PERMISSION = 1;
+	private StunnelBackgroundService stunnelService;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -154,13 +157,18 @@ public class MainActivity extends AppCompatActivity {
 						@Override
 						public void onFragmentStartInteraction() {
 							Intent intent = StunnelBackgroundService.prepare(getApplicationContext());
-							startActivity(intent);
+							if (intent != null) {
+								startActivityForResult(intent, VPN_PERMISSION);
+							} else {
+								onActivityResult(VPN_PERMISSION, RESULT_OK, null); // already have permission
+							}
 						}
 
 						@Override
 						public void onFragmentStopInteraction() {
-							Intent intent = StunnelBackgroundService.prepare(getApplicationContext());
-							startActivity(intent);
+							//Intent intent = StunnelBackgroundService.prepare(getApplicationContext());
+							//startActivity(intent);
+							// do nothing for now
 						}
 					});
 				case 1:
@@ -247,5 +255,20 @@ public class MainActivity extends AppCompatActivity {
 	public void openSettings(MenuItem item) {
 		Intent intent = new Intent(this, AdvancedSettingsActivity.class);
 		startActivity(intent);
+	}
+
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (requestCode == VPN_PERMISSION) {
+			if (resultCode == RESULT_OK) {
+				startService();
+			}
+		}
+	}
+
+	private void startService() {
+		Intent intent = new Intent(this, StunnelBackgroundService.class);
+		startService(intent);
 	}
 }

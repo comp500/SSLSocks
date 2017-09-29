@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 
 /**
@@ -28,10 +29,13 @@ public class StartFragment extends Fragment {
 
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+		final TextView statusLabel = (TextView) getView().findViewById(R.id.statuslabel);
+
 		Button startbutton = (Button) getView().findViewById(R.id.startbutton);
 		startbutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (mListener != null) {
+					statusLabel.setText("Starting.");
 					mListener.onFragmentStartInteraction();
 				}
 			}
@@ -43,6 +47,7 @@ public class StartFragment extends Fragment {
 				// Did you press the stop button?
 				// No, did you?
 				if (mListener != null) {
+					statusLabel.setText("Stopping.");
 					mListener.onFragmentStopInteraction();
 				}
 			}
@@ -96,7 +101,6 @@ public class StartFragment extends Fragment {
 	 */
 	public interface OnFragmentInteractionListener {
 		void onFragmentStartInteraction();
-
 		void onFragmentStopInteraction();
 	}
 }

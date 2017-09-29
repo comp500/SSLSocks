@@ -9,7 +9,7 @@
     tools:context="link.infra.sslsocks.StartFragment"
     android:orientation="vertical">
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/statuslabel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/run_status_label" />
