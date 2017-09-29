@@ -58,6 +58,9 @@ public class MainActivity extends AppCompatActivity implements ServersFragment.O
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
+        tabLayout.addOnTabSelectedListener(onTabSelectedListener);
+        mViewPager.addOnPageChangeListener(onPageChangeListener);
+
         fabAdd = (FloatingActionButton) findViewById(R.id.fab);
         fabAdd.hide();
         fabAdd.setOnClickListener(new View.OnClickListener() {
