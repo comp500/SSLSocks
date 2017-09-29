@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements ServersFragment.O
      */
     private ViewPager mViewPager;
 
+    private FloatingActionButton fabAdd;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,8 +58,9 @@ public class MainActivity extends AppCompatActivity implements ServersFragment.O
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        fabAdd = (FloatingActionButton) findViewById(R.id.fab);
+        fabAdd.hide();
+        fabAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -168,6 +171,43 @@ public class MainActivity extends AppCompatActivity implements ServersFragment.O
             return null;
         }
     }
+
+    private void animateFab(int position) {
+        switch (position) {
+            case 2:
+                fabAdd.show();
+                break;
+            default:
+                fabAdd.hide();
+                break;
+        }
+    }
+
+    TabLayout.OnTabSelectedListener onTabSelectedListener = new TabLayout.OnTabSelectedListener() {
+        @Override
+        public void onTabSelected(TabLayout.Tab tab) {
+            animateFab(tab.getPosition());
+        }
+
+        @Override
+        public void onTabUnselected(TabLayout.Tab tab) {} // nothing needed here
+
+        @Override
+        public void onTabReselected(TabLayout.Tab tab) {} // nothing needed here
+    };
+
+    ViewPager.OnPageChangeListener onPageChangeListener = new ViewPager.OnPageChangeListener() {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {} // nothing needed here
+
+        @Override
+        public void onPageSelected(int position) {
+            animateFab(position);
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {} // nothing needed here
+    };
 
     public void onListFragmentInteraction(DummyContent.DummyItem item) {
         // do nothing
