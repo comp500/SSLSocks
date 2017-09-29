@@ -1,8 +1,11 @@
 package link.infra.sslsocks;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -21,7 +24,7 @@ import android.widget.TextView;
 
 import link.infra.sslsocks.dummy.DummyContent;
 
-public class MainActivity extends AppCompatActivity implements ServersFragment.OnListFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -146,8 +149,26 @@ public class MainActivity extends AppCompatActivity implements ServersFragment.O
             // getItem is called to instantiate the fragment for the given page.
             // Return a Fragment.
             switch (position) {
+                case 0:
+                    return StartFragment.newInstance("", "", new StartFragment.OnFragmentInteractionListener() {
+                        @Override
+                        public void onFragmentInteraction(Uri uri) {
+                            // start it?
+                        }
+                    });
+                case 1:
+                    return LogFragment.newInstance("", "");
                 case 2:
-                    return ServersFragment.newInstance(1);
+                    return ServersFragment.newInstance(1, new ServersFragment.OnListFragmentInteractionListener() {
+                        @Override
+                        public void onListFragmentInteraction(DummyContent.DummyItem item) {
+                            AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                            alertDialog.setTitle("hi");
+                            alertDialog.setMessage("this is my app");
+
+                            alertDialog.show();
+                        }
+                    });
                 default:
                     return PlaceholderFragment.newInstance(position + 1);
             }
@@ -212,7 +233,8 @@ public class MainActivity extends AppCompatActivity implements ServersFragment.O
         public void onPageScrollStateChanged(int state) {} // nothing needed here
     };
 
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
-        // do nothing
+    public void openSettings(MenuItem item) {
+        Intent intent = new Intent(this, AdvancedSettingsActivity.class);
+        startActivity(intent);
     }
 }

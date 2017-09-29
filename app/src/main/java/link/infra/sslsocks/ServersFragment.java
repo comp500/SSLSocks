@@ -38,10 +38,11 @@ public class ServersFragment extends Fragment {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static ServersFragment newInstance(int columnCount) {
+    public static ServersFragment newInstance(int columnCount, OnListFragmentInteractionListener listener) {
         ServersFragment fragment = new ServersFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
+        fragment.mListener = listener;
         fragment.setArguments(args);
         return fragment;
     }
@@ -78,12 +79,6 @@ public class ServersFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
-        }
     }
 
     @Override
