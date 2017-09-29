@@ -150,11 +150,18 @@ public class MainActivity extends AppCompatActivity {
             // Return a Fragment.
             switch (position) {
                 case 0:
-                    return StartFragment.newInstance("", "", new StartFragment.OnFragmentInteractionListener() {
+                    return StartFragment.newInstance(new StartFragment.OnFragmentInteractionListener() {
                         @Override
-                        public void onFragmentInteraction(Uri uri) {
-                            // start it?
+                        public void onFragmentStartInteraction() {
+                            Intent intent = StunnelBackgroundService.prepare(getApplicationContext());
+                            startActivity(intent);
                         }
+
+	                    @Override
+	                    public void onFragmentStopInteraction() {
+		                    Intent intent = StunnelBackgroundService.prepare(getApplicationContext());
+		                    startActivity(intent);
+	                    }
                     });
                 case 1:
                     return LogFragment.newInstance("", "");
