@@ -27,6 +27,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="link.infra.sslsocks.MainActivity" />
         </activity>
+
+        <service
+            android:name=".StunnelIntentService"
+            android:exported="false"></service>
     </application>
 
 </manifest>

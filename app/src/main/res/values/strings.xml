@@ -3,6 +3,11 @@
     <string name="action_settings">Advanced Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
 
+    <!-- Main fragment -->
+    <string name="start_button">START</string>
+    <string name="stop_button">STOP</string>
+    <string name="run_status_label">Not running</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_advanced_settings">Advanced Settings</string>
