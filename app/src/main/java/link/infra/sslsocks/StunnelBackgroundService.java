@@ -1,13 +1,11 @@
 package link.infra.sslsocks;
 
-import android.app.Service;
-import android.content.Intent;
 import android.net.VpnService;
-import android.os.IBinder;
-import android.util.Log;
 
 public class StunnelBackgroundService extends VpnService {
 	private VpnService.Builder builder;
+	private static final String VPN_ADDRESS = "10.0.0.2"; // Only IPv4 support for now
+	private static final String VPN_ROUTE = "0.0.0.0"; // Intercept everything
 
 	public StunnelBackgroundService() {
 
@@ -15,13 +13,8 @@ public class StunnelBackgroundService extends VpnService {
 
 	public void onCreate() {
 		builder = new VpnService.Builder();
+		builder.addAddress(VPN_ADDRESS, 32);
+		builder.addRoute(VPN_ROUTE, 0);
 		builder.establish();
-	}
-
-	@Override
-	public IBinder onBind(Intent intent) {
-		Log.d("Service", "HI");
-		// TODO: Return the communication channel to the service.
-		throw new UnsupportedOperationException("Not yet implemented");
 	}
 }
