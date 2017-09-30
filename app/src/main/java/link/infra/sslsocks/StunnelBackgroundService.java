@@ -66,5 +66,9 @@ public class StunnelBackgroundService extends VpnService {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+
+		NotificationManager mNotificationManager =
+				(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		mNotificationManager.cancel(NOTIFICATION_ID);
 	}
 }
