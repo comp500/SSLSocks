@@ -11,10 +11,17 @@ public class StunnelBackgroundService extends VpnService {
 
 	}
 
+	@Override
 	public void onCreate() {
+		super.onCreate();
 		builder = new VpnService.Builder();
 		builder.addAddress(VPN_ADDRESS, 32);
 		builder.addRoute(VPN_ROUTE, 0);
 		builder.establish();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
 	}
 }
