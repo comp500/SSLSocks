@@ -41,6 +41,8 @@ public class StunnelProcessManager {
 			out.close();
 
 			Runtime.getRuntime().exec("chmod 777 " + HOME + EXECUTABLE);
+
+			Log.d(TAG, "Extracted stunnel binary successfully");
 		} catch (Exception e) {
 			Log.e(TAG, "Failed stunnel extraction: ", e);
 			return false; // extraction failed

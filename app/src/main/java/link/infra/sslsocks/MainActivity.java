@@ -164,9 +164,7 @@ public class MainActivity extends AppCompatActivity {
 
 						@Override
 						public void onFragmentStopInteraction() {
-							//Intent intent = StunnelBackgroundService.prepare(getApplicationContext());
-							//startActivity(intent);
-							// do nothing for now
+							stopStunnelService();
 						}
 					});
 				case 1:
@@ -260,13 +258,14 @@ public class MainActivity extends AppCompatActivity {
 
 		if (requestCode == VPN_PERMISSION) {
 			if (resultCode == RESULT_OK) {
-				startService();
+				Intent intent = new Intent(this, StunnelBackgroundService.class);
+				startService(intent);
 			}
 		}
 	}
 
-	private void startService() {
+	private void stopStunnelService() {
 		Intent intent = new Intent(this, StunnelBackgroundService.class);
-		startService(intent);
+		stopService(intent);
 	}
 }

@@ -2,11 +2,13 @@
     <string name="app_name">SSLSocks</string>
     <string name="action_settings">Advanced Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
+    <string name="notification_desc">Test notification</string>
 
     <!-- Main fragment -->
     <string name="start_button">START</string>
     <string name="stop_button">STOP</string>
     <string name="run_status_label">Not running</string>
+    <string name="run_status_label_running">Running</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
