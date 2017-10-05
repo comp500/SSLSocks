@@ -6,9 +6,12 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.NoSuchElementException;
 
+import static link.infra.sslsocks.Constants.CONFIG;
 import static link.infra.sslsocks.Constants.EXECUTABLE;
 import static link.infra.sslsocks.Constants.HOME;
 
@@ -50,15 +53,20 @@ public class StunnelProcessManager {
 		return true; // extraction succeeded
 	}
 
-	public void start() {
-
+	public static void start() throws InterruptedException {
+		try {
+			Process test = Runtime.getRuntime().exec(HOME + EXECUTABLE + " " + HOME + CONFIG);
+			test.waitFor();
+			Log.e(TAG, new java.util.Scanner(test.getErrorStream()).useDelimiter("\\A").next());
+			Log.e(TAG, new java.util.Scanner(test.getInputStream()).useDelimiter("\\A").next());
+		} catch (IOException e) {
+			Log.e(TAG, "failure", e);
+		} catch (NoSuchElementException e) {
+			Log.e(TAG, "failure", e);
+		}
 	}
 
-	public void stop() {
+	public static void stop() {
 
-	}
-
-	public boolean isAlive() {
-		return false;
 	}
 }

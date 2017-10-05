@@ -59,7 +59,7 @@ public class StunnelIntentService extends IntentService {
 		// Normally we would do some work here, like download a file.
 		// For our sample, we just sleep for 5 seconds.
 		try {
-			Thread.sleep(5000);
+			StunnelProcessManager.start();
 		} catch (InterruptedException e) {
 			// Restore interrupt status.
 			Thread.currentThread().interrupt();
