@@ -9,5 +9,6 @@ public class Constants {
 	public static final String DEF_CONFIG =
 			"foreground = yes\n" +
 					"client = yes\n" +
-					"log = " + HOME + LOG;
+					"log = overwrite\n" +
+					"output = " + HOME + LOG;
 }

@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -64,6 +65,8 @@ public class ConfigEditorActivity extends AppCompatActivity {
 			try {
 				fileOutputStream.write(editText.getText().toString().getBytes());
 				fileOutputStream.close();
+				Toast toast = Toast.makeText(this, R.string.config_editor_saved, Toast.LENGTH_SHORT);
+				toast.show();
 			} catch (IOException e) {
 				Log.e(TAG, "Failed config file writing: ", e);
 				try {
