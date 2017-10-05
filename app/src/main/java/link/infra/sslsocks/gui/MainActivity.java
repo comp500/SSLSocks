@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
 							} else {
 								onActivityResult(VPN_PERMISSION, RESULT_OK, null); // already have permission
 							}*/
-							StunnelIntentService.start(getApplicationContext(), "", "");
+							StunnelIntentService.start(getApplicationContext());
 						}
 
 						@Override
