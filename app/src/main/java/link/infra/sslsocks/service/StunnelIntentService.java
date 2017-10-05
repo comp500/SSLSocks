@@ -56,6 +56,14 @@ public class StunnelIntentService extends IntentService {
 	private void handleStart(String param1, String param2) {
 		// TODO: Make this better
 		ServiceUtils.showNotification(this);
+		// Normally we would do some work here, like download a file.
+		// For our sample, we just sleep for 5 seconds.
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// Restore interrupt status.
+			Thread.currentThread().interrupt();
+		}
 	}
 
 	public void onDestroy() {
