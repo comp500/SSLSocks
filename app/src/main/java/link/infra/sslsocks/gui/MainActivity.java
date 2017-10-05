@@ -1,4 +1,4 @@
-package link.infra.sslsocks;
+package link.infra.sslsocks.gui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,7 +19,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import link.infra.sslsocks.R;
 import link.infra.sslsocks.dummy.DummyContent;
+import link.infra.sslsocks.service.StunnelBackgroundService;
+import link.infra.sslsocks.service.StunnelProcessManager;
 
 public class MainActivity extends AppCompatActivity {
 

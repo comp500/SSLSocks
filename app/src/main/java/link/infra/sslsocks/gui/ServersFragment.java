@@ -1,4 +1,4 @@
-package link.infra.sslsocks;
+package link.infra.sslsocks.gui;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -10,10 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import link.infra.sslsocks.R;
 import link.infra.sslsocks.dummy.DummyContent;
 import link.infra.sslsocks.dummy.DummyContent.DummyItem;
-
-import java.util.List;
 
 /**
  * A fragment representing a list of Items.

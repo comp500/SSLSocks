@@ -1,4 +1,4 @@
-package link.infra.sslsocks;
+package link.infra.sslsocks.service;
 
 import android.content.Context;
 import android.content.res.AssetManager;

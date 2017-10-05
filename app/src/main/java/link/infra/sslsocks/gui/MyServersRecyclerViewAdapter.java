@@ -1,4 +1,4 @@
-package link.infra.sslsocks;
+package link.infra.sslsocks.gui;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -6,22 +6,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import link.infra.sslsocks.ServersFragment.OnListFragmentInteractionListener;
-import link.infra.sslsocks.dummy.DummyContent.DummyItem;
-
 import java.util.List;
+
+import link.infra.sslsocks.R;
+import link.infra.sslsocks.dummy.DummyContent.DummyItem;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
+ * specified {@link ServersFragment.OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
 public class MyServersRecyclerViewAdapter extends RecyclerView.Adapter<MyServersRecyclerViewAdapter.ViewHolder> {
 
 	private final List<DummyItem> mValues;
-	private final OnListFragmentInteractionListener mListener;
+	private final ServersFragment.OnListFragmentInteractionListener mListener;
 
-	public MyServersRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
+	public MyServersRecyclerViewAdapter(List<DummyItem> items, ServersFragment.OnListFragmentInteractionListener listener) {
 		mValues = items;
 		mListener = listener;
 	}

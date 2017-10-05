@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".gui.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -20,16 +20,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AdvancedSettingsActivity"
+            android:name=".gui.AdvancedSettingsActivity"
             android:label="@string/title_activity_advanced_settings"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".gui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="link.infra.sslsocks.MainActivity" />
+                android:value="link.infra.sslsocks.gui.MainActivity"/>
         </activity>
 
         <service
-            android:name=".StunnelBackgroundService"
+            android:name=".service.StunnelBackgroundService"
             android:permission="android.permission.BIND_VPN_SERVICE">
             <intent-filter>
                 <action android:name="android.net.VpnService"/>

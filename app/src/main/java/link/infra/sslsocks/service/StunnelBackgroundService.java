@@ -1,4 +1,4 @@
-package link.infra.sslsocks;
+package link.infra.sslsocks.service;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.net.VpnService;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+
+import link.infra.sslsocks.R;
+import link.infra.sslsocks.gui.MainActivity;
 
 public class StunnelBackgroundService extends VpnService {
 	private VpnService.Builder builder;
