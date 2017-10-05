@@ -5,6 +5,7 @@ import android.content.res.AssetManager;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,12 +13,14 @@ import java.io.OutputStream;
 import java.util.NoSuchElementException;
 
 import static link.infra.sslsocks.Constants.CONFIG;
+import static link.infra.sslsocks.Constants.DEF_CONFIG;
 import static link.infra.sslsocks.Constants.EXECUTABLE;
 import static link.infra.sslsocks.Constants.HOME;
 
 public class StunnelProcessManager {
 
 	private static final String TAG = StunnelProcessManager.class.getSimpleName();
+	private Process stunnelProcess;
 
 	public static boolean checkAndExtract(Context context) {
 		if (new File(HOME + EXECUTABLE).exists()) {
@@ -53,20 +56,55 @@ public class StunnelProcessManager {
 		return true; // extraction succeeded
 	}
 
-	public static void start() throws InterruptedException {
+	public static boolean setupConfig() {
+		if (new File(HOME + CONFIG).exists()) {
+			return true; // already extracted
+		}
+
+		new File(HOME).mkdir();
+
 		try {
-			Process test = Runtime.getRuntime().exec(HOME + EXECUTABLE + " " + HOME + CONFIG);
-			test.waitFor();
-			Log.e(TAG, new java.util.Scanner(test.getErrorStream()).useDelimiter("\\A").next());
-			Log.e(TAG, new java.util.Scanner(test.getInputStream()).useDelimiter("\\A").next());
+			FileOutputStream fileOutputStream = new FileOutputStream(HOME + CONFIG);
+			try {
+				fileOutputStream.write(DEF_CONFIG.getBytes());
+				fileOutputStream.close();
+				return true;
+			} catch (IOException e) {
+				Log.e(TAG, "Failed config file creation: ", e);
+				try {
+					// attempt to finally close the file
+					fileOutputStream.close();
+				} catch (IOException e1) {
+					// ignore exception
+				}
+				return false;
+			}
+		} catch (FileNotFoundException e) {
+			Log.e(TAG, "Failed config file creation: ", e);
+			return false;
+		}
+	}
+
+	public void start(Context context) {
+		checkAndExtract(context);
+		setupConfig();
+		try {
+			stunnelProcess = Runtime.getRuntime().exec(HOME + EXECUTABLE + " " + HOME + CONFIG);
+			stunnelProcess.waitFor();
+			Log.e(TAG, new java.util.Scanner(stunnelProcess.getErrorStream()).useDelimiter("\\A").next());
+			Log.e(TAG, new java.util.Scanner(stunnelProcess.getInputStream()).useDelimiter("\\A").next());
 		} catch (IOException e) {
 			Log.e(TAG, "failure", e);
 		} catch (NoSuchElementException e) {
 			Log.e(TAG, "failure", e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 		}
 	}
 
-	public static void stop() {
-
+	public void stop() {
+		if (stunnelProcess != null) {
+			stunnelProcess.destroy();
+		}
 	}
 }

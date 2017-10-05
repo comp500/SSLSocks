@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
 		// attempt extraction in activity, to make service start faster
 		StunnelProcessManager.checkAndExtract(this);
-
+		StunnelProcessManager.setupConfig();
 	}
 
 

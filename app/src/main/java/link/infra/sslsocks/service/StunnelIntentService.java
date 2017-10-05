@@ -18,6 +18,8 @@ public class StunnelIntentService extends IntentService {
 	private static final String EXTRA_PARAM1 = "link.infra.sslsocks.service.extra.PARAM1";
 	private static final String EXTRA_PARAM2 = "link.infra.sslsocks.service.extra.PARAM2";
 
+	private StunnelProcessManager processManager = new StunnelProcessManager();
+
 	public StunnelIntentService() {
 		super("StunnelIntentService");
 	}
@@ -58,15 +60,11 @@ public class StunnelIntentService extends IntentService {
 		ServiceUtils.showNotification(this);
 		// Normally we would do some work here, like download a file.
 		// For our sample, we just sleep for 5 seconds.
-		try {
-			StunnelProcessManager.start();
-		} catch (InterruptedException e) {
-			// Restore interrupt status.
-			Thread.currentThread().interrupt();
-		}
+		processManager.start(this);
 	}
 
 	public void onDestroy() {
+		processManager.stop();
 		ServiceUtils.removeNotification(this);
 		super.onDestroy();
 	}
