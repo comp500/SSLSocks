@@ -21,8 +21,8 @@ import android.widget.TextView;
 
 import link.infra.sslsocks.R;
 import link.infra.sslsocks.dummy.DummyContent;
-import link.infra.sslsocks.service.StunnelBackgroundService;
 import link.infra.sslsocks.service.StunnelProcessManager;
+import link.infra.sslsocks.service.StunnelVpnService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
 	private ViewPager mViewPager;
 	private FloatingActionButton fabAdd;
 	public final int VPN_PERMISSION = 1;
-	private StunnelBackgroundService stunnelService;
+	private StunnelVpnService stunnelService;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
 					return StartFragment.newInstance(new StartFragment.OnFragmentInteractionListener() {
 						@Override
 						public void onFragmentStartInteraction() {
-							Intent intent = StunnelBackgroundService.prepare(getApplicationContext());
+							Intent intent = StunnelVpnService.prepare(getApplicationContext());
 							if (intent != null) {
 								startActivityForResult(intent, VPN_PERMISSION);
 							} else {
@@ -261,14 +261,14 @@ public class MainActivity extends AppCompatActivity {
 
 		if (requestCode == VPN_PERMISSION) {
 			if (resultCode == RESULT_OK) {
-				Intent intent = new Intent(this, StunnelBackgroundService.class);
+				Intent intent = new Intent(this, StunnelVpnService.class);
 				startService(intent);
 			}
 		}
 	}
 
 	private void stopStunnelService() {
-		Intent intent = new Intent(this, StunnelBackgroundService.class);
+		Intent intent = new Intent(this, StunnelVpnService.class);
 		stopService(intent);
 	}
 }
