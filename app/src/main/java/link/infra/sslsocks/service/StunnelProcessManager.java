@@ -19,6 +19,7 @@ import static link.infra.sslsocks.Constants.DEF_CONFIG;
 import static link.infra.sslsocks.Constants.EXECUTABLE;
 import static link.infra.sslsocks.Constants.HOME;
 import static link.infra.sslsocks.Constants.LOG;
+import static link.infra.sslsocks.Constants.PID;
 
 public class StunnelProcessManager {
 
@@ -89,6 +90,9 @@ public class StunnelProcessManager {
 	}
 
 	public void start(Context context) {
+		if (isAlive() || stunnelProcess != null) {
+			stop();
+		}
 		checkAndExtract(context);
 		setupConfig();
 		try {
@@ -127,5 +131,34 @@ public class StunnelProcessManager {
 		if (stunnelProcess != null) {
 			stunnelProcess.destroy();
 		}
+		if (isAlive()) { // still alive!
+			String pid = "";
+
+			try {
+				BufferedReader br = new BufferedReader(new FileReader(HOME + PID));
+				pid = br.readLine();
+			} catch (IOException e) {
+				Log.e(TAG, "Failed to read PID file", e);
+			}
+
+			Log.d(TAG, "pid = " + pid);
+
+			if (!pid.trim().equals("")) {
+				try {
+					Runtime.getRuntime().exec("kill " + pid).waitFor();
+				} catch (Exception e) {
+					Log.e(TAG, "Failed to kill stunnel", e);
+				}
+
+				if (isAlive()) {
+					// presumed dead, remove pid
+					new File(HOME + PID).delete();
+				}
+			}
+		}
+	}
+
+	public boolean isAlive() {
+		return new File(HOME + PID).exists();
 	}
 }

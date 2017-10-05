@@ -5,10 +5,12 @@ public class Constants {
 	public static final String EXECUTABLE = "stunnel";
 	public static final String CONFIG = "config.conf";
 	public static final String LOG = "log.txt";
+	public static final String PID = "pid";
 
 	public static final String DEF_CONFIG =
 			"foreground = yes\n" +
 					"client = yes\n" +
 					"log = overwrite\n" +
-					"output = " + HOME + LOG;
+					"output = " + HOME + LOG + "\n" +
+					"pid = " + HOME + PID;
 }

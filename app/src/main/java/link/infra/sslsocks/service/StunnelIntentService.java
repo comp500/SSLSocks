@@ -7,16 +7,9 @@ import android.content.Intent;
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
- * <p>
- * TODO: Customize class - update intent actions, extra parameters and static
- * helper methods.
  */
 public class StunnelIntentService extends IntentService {
 	private static final String ACTION_STARTNOVPN = "link.infra.sslsocks.service.action.STARTNOVPN";
-
-	// TODO: Rename parameters
-	private static final String EXTRA_PARAM1 = "link.infra.sslsocks.service.extra.PARAM1";
-	private static final String EXTRA_PARAM2 = "link.infra.sslsocks.service.extra.PARAM2";
 
 	private StunnelProcessManager processManager = new StunnelProcessManager();
 
@@ -30,12 +23,9 @@ public class StunnelIntentService extends IntentService {
 	 *
 	 * @see IntentService
 	 */
-	// TODO: Customize helper method
-	public static void start(Context context, String param1, String param2) {
+	public static void start(Context context) {
 		Intent intent = new Intent(context, StunnelIntentService.class);
 		intent.setAction(ACTION_STARTNOVPN);
-		intent.putExtra(EXTRA_PARAM1, param1);
-		intent.putExtra(EXTRA_PARAM2, param2);
 		context.startService(intent);
 	}
 
@@ -44,22 +34,17 @@ public class StunnelIntentService extends IntentService {
 		if (intent != null) {
 			final String action = intent.getAction();
 			if (ACTION_STARTNOVPN.equals(action)) {
-				final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-				final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-				handleStart(param1, param2);
+				handleStart();
 			}
 		}
 	}
 
 	/**
-	 * Handle action Foo in the provided background thread with the provided
+	 * Handle start action in the provided background thread with the provided
 	 * parameters.
 	 */
-	private void handleStart(String param1, String param2) {
-		// TODO: Make this better
+	private void handleStart() {
 		ServiceUtils.showNotification(this);
-		// Normally we would do some work here, like download a file.
-		// For our sample, we just sleep for 5 seconds.
 		processManager.start(this);
 	}
 
