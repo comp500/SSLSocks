@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,6 +18,7 @@ import static link.infra.sslsocks.Constants.CONFIG;
 import static link.infra.sslsocks.Constants.DEF_CONFIG;
 import static link.infra.sslsocks.Constants.EXECUTABLE;
 import static link.infra.sslsocks.Constants.HOME;
+import static link.infra.sslsocks.Constants.LOG;
 
 public class StunnelProcessManager {
 
@@ -91,8 +94,26 @@ public class StunnelProcessManager {
 		try {
 			stunnelProcess = Runtime.getRuntime().exec(HOME + EXECUTABLE + " " + HOME + CONFIG);
 			stunnelProcess.waitFor();
-			Log.e(TAG, new java.util.Scanner(stunnelProcess.getErrorStream()).useDelimiter("\\A").next());
-			Log.e(TAG, new java.util.Scanner(stunnelProcess.getInputStream()).useDelimiter("\\A").next());
+			Log.d(TAG, new java.util.Scanner(stunnelProcess.getErrorStream()).useDelimiter("\\A").next());
+			Log.d(TAG, new java.util.Scanner(stunnelProcess.getInputStream()).useDelimiter("\\A").next());
+
+			File file = new File(HOME + LOG);
+			StringBuilder text = new StringBuilder();
+
+			try {
+				BufferedReader br = new BufferedReader(new FileReader(file));
+				String line;
+
+				while ((line = br.readLine()) != null) {
+					text.append(line);
+					text.append('\n');
+				}
+				br.close();
+			} catch (IOException e) {
+				Log.e(TAG, "Failed to read config file", e);
+			}
+
+			Log.d(TAG, text.toString());
 		} catch (IOException e) {
 			Log.e(TAG, "failure", e);
 		} catch (NoSuchElementException e) {
