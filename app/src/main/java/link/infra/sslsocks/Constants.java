@@ -5,5 +5,7 @@ public class Constants {
 	public static final String EXECUTABLE = "stunnel";
 	public static final String CONFIG = "config.conf";
 
-	public static final String DEF_CONFIG = "foreground = yes\n";
+	public static final String DEF_CONFIG =
+			"foreground = yes\n" +
+					"client = yes";
 }

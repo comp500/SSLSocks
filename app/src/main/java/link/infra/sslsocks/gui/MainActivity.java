@@ -258,6 +258,11 @@ public class MainActivity extends AppCompatActivity {
 		startActivity(intent);
 	}
 
+	public void openConfigEditor(MenuItem item) {
+		Intent intent = new Intent(this, ConfigEditorActivity.class);
+		startActivity(intent);
+	}
+
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 

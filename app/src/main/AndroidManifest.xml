@@ -39,6 +39,16 @@
             android:name=".service.StunnelIntentService"
             android:exported="false">
         </service>
+
+        <activity
+            android:name=".gui.ConfigEditorActivity"
+            android:label="@string/title_activity_config_editor"
+            android:parentActivityName=".gui.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="link.infra.sslsocks.gui.MainActivity"/>
+        </activity>
     </application>
 
 </manifest>
