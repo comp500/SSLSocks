@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -20,11 +23,13 @@ import link.infra.sslsocks.R;
 import link.infra.sslsocks.service.StunnelProcessManager;
 
 import static link.infra.sslsocks.Constants.CONFIG;
+import static link.infra.sslsocks.Constants.PSKSECRETS;
 
-public class ConfigEditorActivity extends AppCompatActivity {
+public class ConfigEditorActivity extends AppCompatActivity implements OnItemSelectedListener {
 
 	private static final String TAG = ConfigEditorActivity.class.getSimpleName();
 	private EditText editText;
+	private String selectedFile = CONFIG;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +45,17 @@ public class ConfigEditorActivity extends AppCompatActivity {
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(adapter);
 
+		openFile();
+	}
+
+	public void openFile() {
 		editText = (EditText) findViewById(R.id.editText);
-		if (StunnelProcessManager.setupConfig(this)) {
-			File file = new File(this.getFilesDir().getPath() + CONFIG);
+		boolean fileCreated = true;
+		if (selectedFile == CONFIG) {
+			fileCreated = StunnelProcessManager.setupConfig(this);
+		}
+		if (fileCreated) {
+			File file = new File(this.getFilesDir().getPath() + selectedFile);
 			StringBuilder text = new StringBuilder();
 
 			try {
@@ -54,20 +67,26 @@ public class ConfigEditorActivity extends AppCompatActivity {
 					text.append('\n');
 				}
 				br.close();
+				editText.setText(text.toString());
 			} catch (IOException e) {
 				Log.e(TAG, "Failed to read config file", e);
+				editText.getText().clear();
 			}
-
-			editText.setText(text.toString());
 		} else {
 			Log.e(TAG, "Failed to create config file");
+			editText.getText().clear();
 		}
 	}
 
 	@Override
 	public void onPause() {
+		saveFile();
+		super.onPause();
+	}
+
+	public void saveFile() {
 		try {
-			FileOutputStream fileOutputStream = new FileOutputStream(this.getFilesDir().getPath() + CONFIG);
+			FileOutputStream fileOutputStream = new FileOutputStream(this.getFilesDir().getPath() + selectedFile);
 			try {
 				fileOutputStream.write(editText.getText().toString().getBytes());
 				fileOutputStream.close();
@@ -85,8 +104,30 @@ public class ConfigEditorActivity extends AppCompatActivity {
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, "Failed config file writing: ", e);
 		}
+	}
 
-		super.onPause();
+	public void onItemSelected(AdapterView<?> parent, View view,
+	                           int pos, long id) {
+		onSelect(pos);
+	}
+
+	public void onNothingSelected(AdapterView<?> parent) {
+		onSelect(0);
+	}
+
+	public void onSelect(int pos) {
+		saveFile();
+		switch (pos) {
+			case 0:
+				selectedFile = CONFIG;
+				break;
+			case 1:
+				selectedFile = PSKSECRETS;
+				break;
+			default:
+				selectedFile = CONFIG;
+		}
+		openFile();
 	}
 
 }

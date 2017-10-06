@@ -5,6 +5,7 @@ public class Constants {
 	public static final String CERTSFOLDER = "certs/";
 	public static final String EXECUTABLE = "stunnel";
 	public static final String CONFIG = "config.conf";
+	public static final String PSKSECRETS = "psksecrets.txt";
 	public static final String LOG = "log.txt";
 	public static final String PID = "pid";
 
