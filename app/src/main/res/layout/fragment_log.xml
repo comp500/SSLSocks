@@ -8,11 +8,17 @@
              android:paddingTop="@dimen/activity_vertical_margin"
              tools:context="link.infra.sslsocks.gui.LogFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/logtext"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:scrollbars="vertical"
+        android:fillViewport="true">
+
+        <TextView
+            android:id="@+id/logtext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hello_blank_fragment"/>
+    </ScrollView>
 
 </FrameLayout>
