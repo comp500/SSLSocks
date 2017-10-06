@@ -117,7 +117,7 @@ public class StunnelProcessManager {
 				Log.e(TAG, "Failed to read config file", e);
 			}
 
-			Log.d(TAG, text.toString());
+			ServiceUtils.broadcastLog(context, text.toString());
 		} catch (IOException e) {
 			Log.e(TAG, "failure", e);
 		} catch (NoSuchElementException e) {
