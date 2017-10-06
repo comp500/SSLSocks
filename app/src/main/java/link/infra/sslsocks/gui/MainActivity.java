@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
 						}
 					});
 				case 1:
-					return LogFragment.newInstance("", "");
+					return LogFragment.newInstance();
 				case 2:
 					return ServersFragment.newInstance(1, new ServersFragment.OnListFragmentInteractionListener() {
 						@Override

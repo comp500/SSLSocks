@@ -9,7 +9,7 @@ import android.content.Intent;
  * a service on a separate handler thread.
  */
 public class StunnelIntentService extends IntentService {
-	private static final String ACTION_STARTNOVPN = "link.infra.sslsocks.service.action.STARTNOVPN";
+	public static final String ACTION_STARTNOVPN = "link.infra.sslsocks.service.action.STARTNOVPN";
 
 	private StunnelProcessManager processManager = new StunnelProcessManager();
 

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.NoSuchElementException;
+import java.util.Scanner;
 
 import static link.infra.sslsocks.Constants.CONFIG;
 import static link.infra.sslsocks.Constants.DEF_CONFIG;
@@ -97,8 +98,8 @@ public class StunnelProcessManager {
 		try {
 			stunnelProcess = Runtime.getRuntime().exec(context.getFilesDir().getPath() + EXECUTABLE + " " + context.getFilesDir().getPath() + CONFIG);
 			stunnelProcess.waitFor();
-			Log.d(TAG, new java.util.Scanner(stunnelProcess.getErrorStream()).useDelimiter("\\A").next());
-			Log.d(TAG, new java.util.Scanner(stunnelProcess.getInputStream()).useDelimiter("\\A").next());
+			ServiceUtils.broadcastLog(context, readInputStream(stunnelProcess.getErrorStream()));
+			ServiceUtils.broadcastLog(context, readInputStream(stunnelProcess.getInputStream()));
 
 			File file = new File(context.getFilesDir().getPath() + LOG);
 			StringBuilder text = new StringBuilder();
@@ -123,6 +124,16 @@ public class StunnelProcessManager {
 			Log.e(TAG, "failure", e);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
+		}
+	}
+
+	public static String readInputStream(InputStream stream) {
+		Scanner scanner = new Scanner(stream);
+		scanner.useDelimiter("\\A");
+		if (scanner.hasNext()) {
+			return scanner.next();
+		} else {
+			return "";
 		}
 	}
 

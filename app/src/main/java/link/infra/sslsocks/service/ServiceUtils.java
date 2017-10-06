@@ -6,12 +6,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.content.LocalBroadcastManager;
 
 import link.infra.sslsocks.R;
 import link.infra.sslsocks.gui.MainActivity;
 
 public class ServiceUtils {
 	private static final int NOTIFICATION_ID = 0;
+	public static final String ACTION_LOGBROADCAST = "link.infra.sslsocks.service.action.LOGBROADCAST";
+	public static final String EXTENDED_DATA_LOG = "link.infra.sslsocks.service.action.LOGDATA";
 
 	public static void showNotification(Context ctx) {
 		NotificationCompat.Builder mBuilder =
@@ -47,5 +50,14 @@ public class ServiceUtils {
 		NotificationManager mNotificationManager =
 				(NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
 		mNotificationManager.cancel(NOTIFICATION_ID);
+	}
+
+	public static void broadcastLog(Context ctx, String status) {
+		Intent localIntent =
+				new Intent(ACTION_LOGBROADCAST)
+						// Puts the status into the Intent
+						.putExtra(EXTENDED_DATA_LOG, status);
+		// Broadcasts the Intent to receivers in this app.
+		LocalBroadcastManager.getInstance(ctx).sendBroadcast(localIntent);
 	}
 }
