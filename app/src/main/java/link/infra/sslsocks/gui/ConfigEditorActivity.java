@@ -30,6 +30,7 @@ public class ConfigEditorActivity extends AppCompatActivity implements OnItemSel
 	private static final String TAG = ConfigEditorActivity.class.getSimpleName();
 	private EditText editText;
 	private String selectedFile = CONFIG;
+	private int currentPos = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -117,18 +118,21 @@ public class ConfigEditorActivity extends AppCompatActivity implements OnItemSel
 	}
 
 	public void onSelect(int pos) {
-		saveFile();
-		switch (pos) {
-			case 0:
-				selectedFile = CONFIG;
-				break;
-			case 1:
-				selectedFile = PSKSECRETS;
-				break;
-			default:
-				selectedFile = CONFIG;
+		if (currentPos != pos) {
+			saveFile();
+			switch (pos) {
+				case 0:
+					selectedFile = CONFIG;
+					break;
+				case 1:
+					selectedFile = PSKSECRETS;
+					break;
+				default:
+					selectedFile = CONFIG;
+			}
+			openFile();
 		}
-		openFile();
+		currentPos = pos;
 	}
 
 }
