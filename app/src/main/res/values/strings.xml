@@ -27,6 +27,8 @@
         <item>psksecrets.txt</item>
     </string-array>
 
+    <string name="import_pem">Import public/private key</string>
+
     <!-- Strings related to Settings -->
 
     <!-- Example General settings -->
