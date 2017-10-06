@@ -34,7 +34,7 @@ public class ConfigEditorActivity extends AppCompatActivity {
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		editText = (EditText) findViewById(R.id.editText);
-		if (StunnelProcessManager.setupConfig()) {
+		if (StunnelProcessManager.setupConfig(this)) {
 			File file = new File(this.getFilesDir().getPath() + CONFIG);
 			StringBuilder text = new StringBuilder();
 
