@@ -16,6 +16,10 @@
 
     <string name="title_activity_config_editor">Config Editor</string>
     <string name="config_editor_saved">Config saved!</string>
+    <string-array name="files_array">
+        <item>stunnel.conf</item>
+        <item>psksecrets.txt</item>
+    </string-array>
 
     <!-- Strings related to Settings -->
 

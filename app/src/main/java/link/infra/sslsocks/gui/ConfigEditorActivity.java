@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -30,8 +32,13 @@ public class ConfigEditorActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_config_editor);
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
-
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+		Spinner spinner = (Spinner) findViewById(R.id.spinner);
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+				R.array.files_array, android.R.layout.simple_spinner_item);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinner.setAdapter(adapter);
 
 		editText = (EditText) findViewById(R.id.editText);
 		if (StunnelProcessManager.setupConfig(this)) {
