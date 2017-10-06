@@ -18,7 +18,6 @@ import link.infra.sslsocks.R;
 import link.infra.sslsocks.service.StunnelProcessManager;
 
 import static link.infra.sslsocks.Constants.CONFIG;
-import static link.infra.sslsocks.Constants.HOME;
 
 public class ConfigEditorActivity extends AppCompatActivity {
 
@@ -36,7 +35,7 @@ public class ConfigEditorActivity extends AppCompatActivity {
 
 		editText = (EditText) findViewById(R.id.editText);
 		if (StunnelProcessManager.setupConfig()) {
-			File file = new File(HOME + CONFIG);
+			File file = new File(this.getFilesDir().getPath() + CONFIG);
 			StringBuilder text = new StringBuilder();
 
 			try {
@@ -61,7 +60,7 @@ public class ConfigEditorActivity extends AppCompatActivity {
 	@Override
 	public void onPause() {
 		try {
-			FileOutputStream fileOutputStream = new FileOutputStream(HOME + CONFIG);
+			FileOutputStream fileOutputStream = new FileOutputStream(this.getFilesDir().getPath() + CONFIG);
 			try {
 				fileOutputStream.write(editText.getText().toString().getBytes());
 				fileOutputStream.close();

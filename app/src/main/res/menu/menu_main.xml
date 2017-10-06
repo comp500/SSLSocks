@@ -14,4 +14,10 @@
         android:title="@string/title_activity_config_editor"
         app:showAsAction="never"
         android:onClick="openConfigEditor"/>
+    <item
+        android:id="@+id/action_import_file"
+        android:orderInCategory="100"
+        android:title="@string/title_activity_config_editor"
+        app:showAsAction="never"
+        android:onClick="importExternalFile"/>
 </menu>

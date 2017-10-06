@@ -12,6 +12,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
 	private ViewPager mViewPager;
 	private FloatingActionButton fabAdd;
 	public final int VPN_PERMISSION = 1;
+	public final int IMPORT_FILE = 2;
 	private StunnelVpnService stunnelService;
 
 	@Override
@@ -78,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
 
 		// attempt extraction in activity, to make service start faster
 		StunnelProcessManager.checkAndExtract(this);
-		StunnelProcessManager.setupConfig();
+		StunnelProcessManager.setupConfig(this);
 	}
 
 
@@ -272,10 +274,25 @@ public class MainActivity extends AppCompatActivity {
 				startService(intent);
 			}
 		}
+
+		if (requestCode == IMPORT_FILE) {
+			if (resultCode == RESULT_OK) {
+				String filePath = data.getData().getPath();
+				Log.d("test", filePath);
+			}
+		}
 	}
 
 	private void stopStunnelService() {
 		Intent intent = new Intent(this, StunnelIntentService.class);
 		stopService(intent);
+	}
+
+	public void importExternalFile(MenuItem item) {
+		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+		intent.setType("*/*");
+		intent.addCategory(Intent.CATEGORY_OPENABLE);
+		Intent chooserIntent = Intent.createChooser(intent, getString(R.string.title_activity_config_editor));
+		startActivityForResult(chooserIntent, IMPORT_FILE);
 	}
 }

@@ -49,7 +49,7 @@ public class StunnelIntentService extends IntentService {
 	}
 
 	public void onDestroy() {
-		processManager.stop();
+		processManager.stop(this);
 		ServiceUtils.removeNotification(this);
 		super.onDestroy();
 	}

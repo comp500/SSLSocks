@@ -17,7 +17,6 @@ import java.util.NoSuchElementException;
 import static link.infra.sslsocks.Constants.CONFIG;
 import static link.infra.sslsocks.Constants.DEF_CONFIG;
 import static link.infra.sslsocks.Constants.EXECUTABLE;
-import static link.infra.sslsocks.Constants.HOME;
 import static link.infra.sslsocks.Constants.LOG;
 import static link.infra.sslsocks.Constants.PID;
 
@@ -27,17 +26,17 @@ public class StunnelProcessManager {
 	private Process stunnelProcess;
 
 	public static boolean checkAndExtract(Context context) {
-		if (new File(HOME + EXECUTABLE).exists()) {
+		if (new File(context.getFilesDir().getPath() + EXECUTABLE).exists()) {
 			return true; // already extracted
 		}
 
-		new File(HOME).mkdir();
+		new File(context.getFilesDir().getPath()).mkdir();
 
 		// Extract stunnel exectuable
 		AssetManager am = context.getAssets();
 		try {
 			InputStream in = am.open(EXECUTABLE);
-			OutputStream out = new FileOutputStream(HOME + EXECUTABLE);
+			OutputStream out = new FileOutputStream(context.getFilesDir().getPath() + EXECUTABLE);
 
 			byte[] buf = new byte[512];
 			int len;
@@ -50,7 +49,7 @@ public class StunnelProcessManager {
 			out.flush();
 			out.close();
 
-			Runtime.getRuntime().exec("chmod 777 " + HOME + EXECUTABLE);
+			Runtime.getRuntime().exec("chmod 777 " + context.getFilesDir().getPath() + EXECUTABLE);
 
 			Log.d(TAG, "Extracted stunnel binary successfully");
 		} catch (Exception e) {
@@ -60,15 +59,15 @@ public class StunnelProcessManager {
 		return true; // extraction succeeded
 	}
 
-	public static boolean setupConfig() {
-		if (new File(HOME + CONFIG).exists()) {
+	public static boolean setupConfig(Context context) {
+		if (new File(context.getFilesDir().getPath() + CONFIG).exists()) {
 			return true; // already extracted
 		}
 
-		new File(HOME).mkdir();
+		new File(context.getFilesDir().getPath()).mkdir();
 
 		try {
-			FileOutputStream fileOutputStream = new FileOutputStream(HOME + CONFIG);
+			FileOutputStream fileOutputStream = new FileOutputStream(context.getFilesDir().getPath() + CONFIG);
 			try {
 				fileOutputStream.write(DEF_CONFIG.getBytes());
 				fileOutputStream.close();
@@ -90,18 +89,18 @@ public class StunnelProcessManager {
 	}
 
 	public void start(Context context) {
-		if (isAlive() || stunnelProcess != null) {
-			stop();
+		if (isAlive(context) || stunnelProcess != null) {
+			stop(context);
 		}
 		checkAndExtract(context);
-		setupConfig();
+		setupConfig(context);
 		try {
-			stunnelProcess = Runtime.getRuntime().exec(HOME + EXECUTABLE + " " + HOME + CONFIG);
+			stunnelProcess = Runtime.getRuntime().exec(context.getFilesDir().getPath() + EXECUTABLE + " " + context.getFilesDir().getPath() + CONFIG);
 			stunnelProcess.waitFor();
 			Log.d(TAG, new java.util.Scanner(stunnelProcess.getErrorStream()).useDelimiter("\\A").next());
 			Log.d(TAG, new java.util.Scanner(stunnelProcess.getInputStream()).useDelimiter("\\A").next());
 
-			File file = new File(HOME + LOG);
+			File file = new File(context.getFilesDir().getPath() + LOG);
 			StringBuilder text = new StringBuilder();
 
 			try {
@@ -127,15 +126,15 @@ public class StunnelProcessManager {
 		}
 	}
 
-	public void stop() {
+	public void stop(Context context) {
 		if (stunnelProcess != null) {
 			stunnelProcess.destroy();
 		}
-		if (isAlive()) { // still alive!
+		if (isAlive(context)) { // still alive!
 			String pid = "";
 
 			try {
-				BufferedReader br = new BufferedReader(new FileReader(HOME + PID));
+				BufferedReader br = new BufferedReader(new FileReader(context.getFilesDir().getPath() + PID));
 				pid = br.readLine();
 			} catch (IOException e) {
 				Log.e(TAG, "Failed to read PID file", e);
@@ -150,15 +149,15 @@ public class StunnelProcessManager {
 					Log.e(TAG, "Failed to kill stunnel", e);
 				}
 
-				if (isAlive()) {
+				if (isAlive(context)) {
 					// presumed dead, remove pid
-					new File(HOME + PID).delete();
+					new File(context.getFilesDir().getPath() + PID).delete();
 				}
 			}
 		}
 	}
 
-	public boolean isAlive() {
-		return new File(HOME + PID).exists();
+	public boolean isAlive(Context context) {
+		return new File(context.getFilesDir().getPath() + PID).exists();
 	}
 }
