@@ -1,6 +1,7 @@
 package link.infra.sslsocks.gui;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -194,23 +195,16 @@ public class MainActivity extends AppCompatActivity {
 
 		@Override
 		public int getCount() {
-			// Show 4 total pages.
-			return 4;
+			Resources res = getResources();
+			String[] tabs = res.getStringArray(R.array.tabs_array);
+			return tabs.length;
 		}
 
 		@Override
 		public CharSequence getPageTitle(int position) {
-			switch (position) {
-				case 0:
-					return "HOME";
-				case 1:
-					return "LOG";
-				case 2:
-					return "SERVERS";
-				case 3:
-					return "SETTINGS";
-			}
-			return null;
+			Resources res = getResources();
+			String[] tabs = res.getStringArray(R.array.tabs_array);
+			return tabs[position];
 		}
 	}
 

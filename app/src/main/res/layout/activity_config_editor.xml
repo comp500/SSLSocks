@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context="link.infra.sslsocks.gui.ConfigEditorActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -24,20 +25,21 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:paddingTop="?attr/actionBarSize"
+        android:orientation="vertical">
 
         <Spinner
             android:id="@+id/spinner"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:layout_height="wrap_content"/>
         <EditText
             android:id="@+id/editText"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:ems="10"
+            android:gravity="top|start"
             android:inputType="textMultiLine"
-            android:gravity="start|top"
             android:background="@android:color/transparent"
             android:textCursorDrawable="@null"
             android:padding="5dp"/>

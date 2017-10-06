@@ -9,6 +9,12 @@
     <string name="stop_button">STOP</string>
     <string name="run_status_label">Not running</string>
     <string name="run_status_label_running">Running</string>
+    <string-array name="tabs_array">
+        <item>HOME</item>
+        <item>LOG</item>
+        <item>PROFILES</item>
+        <item>SETTINGS</item>
+    </string-array>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
