@@ -18,6 +18,7 @@ import java.util.Scanner;
 import static link.infra.sslsocks.Constants.CONFIG;
 import static link.infra.sslsocks.Constants.DEF_CONFIG;
 import static link.infra.sslsocks.Constants.EXECUTABLE;
+import static link.infra.sslsocks.Constants.EXECUTABLE_NOSLASH;
 import static link.infra.sslsocks.Constants.LOG;
 import static link.infra.sslsocks.Constants.PID;
 
@@ -36,7 +37,7 @@ public class StunnelProcessManager {
 		// Extract stunnel exectuable
 		AssetManager am = context.getAssets();
 		try {
-			InputStream in = am.open(EXECUTABLE);
+			InputStream in = am.open(EXECUTABLE_NOSLASH);
 			OutputStream out = new FileOutputStream(context.getFilesDir().getPath() + EXECUTABLE);
 
 			byte[] buf = new byte[512];
