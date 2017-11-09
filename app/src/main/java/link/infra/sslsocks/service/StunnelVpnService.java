@@ -8,9 +8,11 @@ import android.util.Log;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
 
 public class StunnelVpnService extends VpnService {
 	private VpnService.Builder builder = new VpnService.Builder();
@@ -45,6 +47,7 @@ public class StunnelVpnService extends VpnService {
 			@Override
 			public void run() {
 				try {
+					Thread.sleep(1000);
 					//a. Configure the TUN and get the interface.
 					builder.setSession("MyVPNService");
 					builder.addAddress("192.168.0.1", 24);
@@ -57,27 +60,48 @@ public class StunnelVpnService extends VpnService {
 					FileOutputStream out = new FileOutputStream(
 							vpnInterface.getFileDescriptor());
 					//c. The UDP channel can be used to pass/get ip package to/from server
-					DatagramChannel tunnel = DatagramChannel.open();
-					//Socket tunnel = new Socket();
+					//DatagramChannel tunnel = DatagramChannel.open();
+					Socket tunnel = new Socket();
 					// Connect to the server, localhost is used for demonstration only.
-					tunnel.connect(new InetSocketAddress("127.0.0.1", 9050));
-					tunnel.configureBlocking(false);
+					tunnel.connect(new InetSocketAddress("127.0.0.1", 10000));
+					//tunnel.configureBlocking(false);
 					//d. Protect this socket, so package send by it will not be feedback to the vpn service.
-					protect(tunnel.socket());
+					protect(tunnel);
 					//e. Use a loop to pass packets.
 					ByteBuffer packet = ByteBuffer.allocate(Short.MAX_VALUE);
+					OutputStream outStream = tunnel.getOutputStream();
+					InputStream inStream = tunnel.getInputStream();
+
+					byte[] buffer = new byte[Short.MAX_VALUE];
+					int len;
 
 					while (!Thread.interrupted()) {
+						Log.d("VPNservice", "5");
+						while (in.available() > 0) {
+							len = in.read(buffer);
+							outStream.write(buffer, 0, len);
+							Log.d("VPNservice", "6" + len);
+						}
+						while (inStream.available() > 0) {
+							len = inStream.read(buffer);
+							out.write(buffer, 0, len);
+							Log.d("VPNservice", "7");
+						}
+						Log.d("VPNservice", "8");
+
+						Thread.sleep(100);
+
+						/*
 						Log.d("VPNservice", "5");
 						int length = in.read(packet.array());
 						if (length > 0) {
 							packet.limit(length);
-							tunnel.write(packet);
+							outChannel.write(packet);
 							// There might be more outgoing packets.
 							Log.d("VPNservice", "6");
 						}
 						Log.d("VPNservice", "7");
-						length = tunnel.read(packet);
+						length = inChannel.read(packet);
 						Log.d("VPNservice", "8");
 						if (length > 0) {
 							if (packet.get(0) != 0) {
@@ -88,7 +112,7 @@ public class StunnelVpnService extends VpnService {
 							Log.d("VPNservice", "10");
 						}
 						Thread.sleep(100);
-						Log.d("VPNservice", "11");
+						Log.d("VPNservice", "11");*/
 					}
 
 				} catch (Exception e) {
