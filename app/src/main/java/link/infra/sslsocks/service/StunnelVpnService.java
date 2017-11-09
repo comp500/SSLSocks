@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.VpnService;
 import android.os.ParcelFileDescriptor;
+import android.util.Log;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 
 public class StunnelVpnService extends VpnService {
@@ -56,26 +58,37 @@ public class StunnelVpnService extends VpnService {
 							vpnInterface.getFileDescriptor());
 					//c. The UDP channel can be used to pass/get ip package to/from server
 					DatagramChannel tunnel = DatagramChannel.open();
+					//Socket tunnel = new Socket();
 					// Connect to the server, localhost is used for demonstration only.
 					tunnel.connect(new InetSocketAddress("127.0.0.1", 9050));
+					tunnel.configureBlocking(false);
 					//d. Protect this socket, so package send by it will not be feedback to the vpn service.
 					protect(tunnel.socket());
 					//e. Use a loop to pass packets.
-					char[] myBuffer = new char[1024];
-					int bytesRead = 0;
+					ByteBuffer packet = ByteBuffer.allocate(Short.MAX_VALUE);
 
-					while (true) {
-						while (in.available() > 0) {
-							int a = in.read();
-
-							//tunnel.write(a);
+					while (!Thread.interrupted()) {
+						Log.d("VPNservice", "5");
+						int length = in.read(packet.array());
+						if (length > 0) {
+							packet.limit(length);
+							tunnel.write(packet);
+							// There might be more outgoing packets.
+							Log.d("VPNservice", "6");
 						}
-						//get packet with in
-						//put packet to tunnel
-						//get packet form tunnel
-						//return packet with out
-						//sleep is a must
+						Log.d("VPNservice", "7");
+						length = tunnel.read(packet);
+						Log.d("VPNservice", "8");
+						if (length > 0) {
+							if (packet.get(0) != 0) {
+								out.write(packet.array(), 0, length);
+								Log.d("VPNservice", "9");
+							}
+							packet.clear();
+							Log.d("VPNservice", "10");
+						}
 						Thread.sleep(100);
+						Log.d("VPNservice", "11");
 					}
 
 				} catch (Exception e) {
