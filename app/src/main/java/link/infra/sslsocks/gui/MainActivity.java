@@ -23,7 +23,6 @@ import android.widget.TextView;
 
 import link.infra.sslsocks.R;
 import link.infra.sslsocks.dummy.DummyContent;
-import link.infra.sslsocks.service.StunnelIntentService;
 import link.infra.sslsocks.service.StunnelProcessManager;
 import link.infra.sslsocks.service.StunnelVpnService;
 
@@ -161,13 +160,13 @@ public class MainActivity extends AppCompatActivity {
 					return StartFragment.newInstance(new StartFragment.OnFragmentInteractionListener() {
 						@Override
 						public void onFragmentStartInteraction() {
-							/*Intent intent = StunnelVpnService.prepare(getApplicationContext());
+							Intent intent = StunnelVpnService.prepare(getApplicationContext());
 							if (intent != null) {
 								startActivityForResult(intent, VPN_PERMISSION);
 							} else {
 								onActivityResult(VPN_PERMISSION, RESULT_OK, null); // already have permission
-							}*/
-							StunnelIntentService.start(getApplicationContext());
+							}
+							//StunnelIntentService.start(getApplicationContext());
 						}
 
 						@Override
@@ -278,7 +277,8 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void stopStunnelService() {
-		Intent intent = new Intent(this, StunnelIntentService.class);
+		//Intent intent = new Intent(this, StunnelIntentService.class);
+		Intent intent = new Intent(this, StunnelVpnService.class);
 		stopService(intent);
 	}
 
