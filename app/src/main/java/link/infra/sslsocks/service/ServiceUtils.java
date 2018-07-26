@@ -12,12 +12,15 @@ import link.infra.sslsocks.R;
 import link.infra.sslsocks.gui.MainActivity;
 
 public class ServiceUtils {
-	private static final int NOTIFICATION_ID = 0;
+	private static final int NOTIFICATION_ID = 1;
 	public static final String ACTION_LOGBROADCAST = "link.infra.sslsocks.service.action.LOGBROADCAST";
 	public static final String EXTENDED_DATA_LOG = "link.infra.sslsocks.service.action.LOGDATA";
 	public static final String ACTION_CLEARLOG = "link.infra.sslsocks.service.action.CLEARLOG";
+	public static final String ACTION_STARTED = "link.infra.sslsocks.service.action.STARTED";
+	public static final String ACTION_STOPPED = "link.infra.sslsocks.service.action.STOPPED";
+	public static final String SHOULD_CLEAR_LOG = "link.infra.sslsocks.service.action.SHOULDCLEAR";
 
-	public static void showNotification(Context ctx) {
+	public static void showNotification(StunnelIntentService ctx) {
 		NotificationCompat.Builder mBuilder =
 				new NotificationCompat.Builder(ctx, MainActivity.CHANNEL_ID)
 						.setSmallIcon(android.R.color.transparent)
@@ -42,11 +45,9 @@ public class ServiceUtils {
 						PendingIntent.FLAG_UPDATE_CURRENT
 				);
 		mBuilder.setContentIntent(resultPendingIntent);
-		NotificationManager mNotificationManager =
-				(NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
-		if (mNotificationManager != null) {
-			mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
-		}
+
+		// Ensure that the service is a foreground service
+		ctx.startForeground(NOTIFICATION_ID, mBuilder.build());
 	}
 
 	public static void removeNotification(Context ctx) {
@@ -57,18 +58,48 @@ public class ServiceUtils {
 		}
 	}
 
-	public static void broadcastLog(Context ctx, String status) {
+	public static void broadcastLog(StunnelIntentService ctx, String status) {
 		Intent localIntent =
 				new Intent(ACTION_LOGBROADCAST)
 						// Puts the status into the Intent
 						.putExtra(EXTENDED_DATA_LOG, status);
 		// Broadcasts the Intent to receivers in this app.
 		LocalBroadcastManager.getInstance(ctx).sendBroadcast(localIntent);
+		if (ctx.pendingLog == null) {
+			ctx.pendingLog = status + "\n";
+		} else {
+			ctx.pendingLog = ctx.pendingLog + status + "\n";
+		}
 	}
 
-	public static void clearLog(Context ctx) {
+	public static void broadcastPreviousLog(StunnelIntentService ctx) {
+		if (ctx.pendingLog == null) return;
+
+		Intent localIntent =
+				new Intent(ACTION_LOGBROADCAST)
+						// Puts the status into the Intent
+						.putExtra(EXTENDED_DATA_LOG, ctx.pendingLog)
+						.putExtra(SHOULD_CLEAR_LOG, "");
+		// Broadcasts the Intent to receivers in this app.
+		LocalBroadcastManager.getInstance(ctx).sendBroadcast(localIntent);
+	}
+
+	public static void broadcastStarted(Context ctx) {
+		Intent localIntent = new Intent(ACTION_STARTED);
+		// Broadcasts the Intent to receivers in this app.
+		LocalBroadcastManager.getInstance(ctx).sendBroadcast(localIntent);
+	}
+
+	public static void broadcastStopped(Context ctx) {
+		Intent localIntent = new Intent(ACTION_STOPPED);
+		// Broadcasts the Intent to receivers in this app.
+		LocalBroadcastManager.getInstance(ctx).sendBroadcast(localIntent);
+	}
+
+	public static void clearLog(StunnelIntentService ctx) {
 		Intent localIntent = new Intent(ACTION_CLEARLOG);
 		// Broadcasts the Intent to receivers in this app.
 		LocalBroadcastManager.getInstance(ctx).sendBroadcast(localIntent);
+		ctx.pendingLog = null;
 	}
 }

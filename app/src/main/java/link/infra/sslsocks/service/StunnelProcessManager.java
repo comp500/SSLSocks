@@ -89,7 +89,7 @@ public class StunnelProcessManager {
 		}
 	}
 
-	public void start(Context context) {
+	public void start(StunnelIntentService context) {
 		if (isAlive(context) || stunnelProcess != null) {
 			stop(context);
 		}
@@ -100,6 +100,7 @@ public class StunnelProcessManager {
 			stunnelProcess = Runtime.getRuntime().exec(context.getFilesDir().getPath() + EXECUTABLE + " " + context.getFilesDir().getPath() + CONFIG);
 			readInputStream(context, stunnelProcess.getErrorStream());
 			readInputStream(context, stunnelProcess.getInputStream());
+			ServiceUtils.broadcastStarted(context);
 			stunnelProcess.waitFor();
 		} catch (IOException e) {
 			Log.e(TAG, "failure", e);
@@ -108,7 +109,7 @@ public class StunnelProcessManager {
 		}
 	}
 
-	private static void readInputStream(final Context context, final InputStream stream) {
+	private static void readInputStream(final StunnelIntentService context, final InputStream stream) {
 		Thread streamReader = new Thread(){
 			public void run() {
 				Scanner scanner = new Scanner(stream);

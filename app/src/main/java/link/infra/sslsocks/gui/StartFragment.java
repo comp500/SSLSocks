@@ -1,16 +1,25 @@
 package link.infra.sslsocks.gui;
 
+import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.Objects;
+
 import link.infra.sslsocks.R;
+import link.infra.sslsocks.service.ServiceUtils;
 
 
 /**
@@ -29,30 +38,54 @@ public class StartFragment extends Fragment {
 	}
 
 	@Override
-	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-		final TextView statusLabel = (TextView) getView().findViewById(R.id.statuslabel);
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		final TextView statusLabel = Objects.requireNonNull(getView()).findViewById(R.id.statuslabel);
 
-		Button startbutton = (Button) getView().findViewById(R.id.startbutton);
+		Button startbutton = getView().findViewById(R.id.startbutton);
 		startbutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (mListener != null) {
-					statusLabel.setText("Starting.");
+					statusLabel.setText(R.string.run_status_label_starting);
 					mListener.onFragmentStartInteraction();
 				}
 			}
 		});
 
-		Button stopbutton = (Button) getView().findViewById(R.id.stopbutton);
+		Button stopbutton = getView().findViewById(R.id.stopbutton);
 		stopbutton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				// Did you press the stop button?
 				// No, did you?
 				if (mListener != null) {
-					statusLabel.setText("Stopping.");
+					statusLabel.setText(R.string.run_status_label_stopping);
 					mListener.onFragmentStopInteraction();
 				}
 			}
 		});
+
+		Activity act = getActivity();
+		if (act == null) {
+			return;
+		}
+		LocalBroadcastManager manager = LocalBroadcastManager.getInstance(act);
+
+		IntentFilter startedIntentFilter = new IntentFilter(ServiceUtils.ACTION_STARTED);
+		BroadcastReceiver startedReceiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				statusLabel.setText(R.string.run_status_label_running);
+			}
+		};
+		manager.registerReceiver(startedReceiver, startedIntentFilter);
+
+		IntentFilter stoppedIntentFilter = new IntentFilter(ServiceUtils.ACTION_STOPPED);
+		BroadcastReceiver stoppedReceiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				statusLabel.setText(R.string.run_status_label);
+			}
+		};
+		manager.registerReceiver(stoppedReceiver, stoppedIntentFilter);
 	}
 
 	/**
@@ -73,7 +106,7 @@ public class StartFragment extends Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
 		return inflater.inflate(R.layout.fragment_start, container, false);

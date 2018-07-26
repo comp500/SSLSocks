@@ -18,6 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Objects;
 
 import link.infra.sslsocks.R;
 import link.infra.sslsocks.service.StunnelProcessManager;
@@ -36,11 +37,11 @@ public class ConfigEditorActivity extends AppCompatActivity implements OnItemSel
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_config_editor);
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
-		Spinner spinner = (Spinner) findViewById(R.id.spinner);
+		Spinner spinner = findViewById(R.id.spinner);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
 				R.array.files_array, android.R.layout.simple_spinner_item);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -51,9 +52,9 @@ public class ConfigEditorActivity extends AppCompatActivity implements OnItemSel
 	}
 
 	public void openFile() {
-		editText = (EditText) findViewById(R.id.editText);
+		editText = findViewById(R.id.editText);
 		boolean fileCreated = true;
-		if (selectedFile == CONFIG) {
+		if (selectedFile.equals(CONFIG)) {
 			fileCreated = StunnelProcessManager.setupConfig(this);
 		}
 		if (fileCreated) {

@@ -1,8 +1,11 @@
 package link.infra.sslsocks.service;
 
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.support.v4.content.LocalBroadcastManager;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -10,8 +13,10 @@ import android.content.Intent;
  */
 public class StunnelIntentService extends IntentService {
 	public static final String ACTION_STARTNOVPN = "link.infra.sslsocks.service.action.STARTNOVPN";
+	public static final String ACTION_RESUMEACTIVITY = "link.infra.sslsocks.service.action.RESUMEACTIVITY";
 
 	private StunnelProcessManager processManager = new StunnelProcessManager();
+	public String pendingLog;
 
 	public StunnelIntentService() {
 		super("StunnelIntentService");
@@ -29,6 +34,12 @@ public class StunnelIntentService extends IntentService {
 		context.startService(intent);
 	}
 
+	public static void checkStatus(Context context) {
+		Intent localIntent = new Intent(ACTION_RESUMEACTIVITY);
+		// Broadcasts the Intent to receivers in this app.
+		LocalBroadcastManager.getInstance(context).sendBroadcast(localIntent);
+	}
+
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		if (intent != null) {
@@ -44,6 +55,18 @@ public class StunnelIntentService extends IntentService {
 	 * parameters.
 	 */
 	private void handleStart() {
+		LocalBroadcastManager manager = LocalBroadcastManager.getInstance(this);
+		IntentFilter resumeIntentFilter = new IntentFilter(ACTION_RESUMEACTIVITY);
+		final StunnelIntentService ctx = this;
+		BroadcastReceiver resumeReceiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				ServiceUtils.broadcastStarted(ctx);
+				ServiceUtils.broadcastPreviousLog(ctx);
+			}
+		};
+		manager.registerReceiver(resumeReceiver, resumeIntentFilter);
+
 		ServiceUtils.showNotification(this);
 		processManager.start(this);
 	}
@@ -51,6 +74,7 @@ public class StunnelIntentService extends IntentService {
 	public void onDestroy() {
 		processManager.stop(this);
 		ServiceUtils.removeNotification(this);
+		ServiceUtils.broadcastStopped(this);
 		super.onDestroy();
 	}
 }

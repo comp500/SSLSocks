@@ -66,6 +66,9 @@ public class LogFragment extends Fragment {
 		BroadcastReceiver statusReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
+				if (intent.hasExtra(ServiceUtils.SHOULD_CLEAR_LOG)) {
+					logText.setText("");
+				}
 				if (intent.hasExtra(ServiceUtils.EXTENDED_DATA_LOG)) {
 					logText.append(intent.getStringExtra(ServiceUtils.EXTENDED_DATA_LOG));
 					logText.append("\n");
