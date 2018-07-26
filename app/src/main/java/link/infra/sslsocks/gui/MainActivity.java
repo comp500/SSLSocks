@@ -1,8 +1,12 @@
 package link.infra.sslsocks.gui;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -46,29 +50,30 @@ public class MainActivity extends AppCompatActivity {
 	public final int VPN_PERMISSION = 1;
 	public final int IMPORT_FILE = 2;
 	private StunnelVpnService stunnelService;
+	public static final String CHANNEL_ID = "NOTIFY_CHANNEL_1";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the activity.
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
 		// Set up the ViewPager with the sections adapter.
-		mViewPager = (ViewPager) findViewById(R.id.container);
+		mViewPager = findViewById(R.id.container);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 
-		TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+		TabLayout tabLayout = findViewById(R.id.tabs);
 		tabLayout.setupWithViewPager(mViewPager);
 
 		tabLayout.addOnTabSelectedListener(onTabSelectedListener);
 		mViewPager.addOnPageChangeListener(onPageChangeListener);
 
-		fabAdd = (FloatingActionButton) findViewById(R.id.fab);
+		fabAdd = findViewById(R.id.fab);
 		fabAdd.hide();
 		fabAdd.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -81,6 +86,20 @@ public class MainActivity extends AppCompatActivity {
 		// attempt extraction in activity, to make service start faster
 		StunnelProcessManager.checkAndExtract(this);
 		StunnelProcessManager.setupConfig(this);
+
+		// Create the NotificationChannel, but only on API 26+ because
+		// the NotificationChannel class is new and not in the support library
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			CharSequence name = getString(R.string.notification_channel);
+			String description = getString(R.string.notification_desc);
+			int importance = NotificationManager.IMPORTANCE_DEFAULT;
+			NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+			channel.setDescription(description);
+			// Register the channel with the system; you can't change the importance
+			// or other notification behaviors after this
+			NotificationManager notificationManager = getSystemService(NotificationManager.class);
+			notificationManager.createNotificationChannel(channel);
+		}
 	}
 
 
@@ -132,10 +151,10 @@ public class MainActivity extends AppCompatActivity {
 		}
 
 		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-		                         Bundle savedInstanceState) {
+		public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-			TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+			TextView textView = rootView.findViewById(R.id.section_label);
 			textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
 			return rootView;
 		}
@@ -147,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
 	 */
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-		public SectionsPagerAdapter(FragmentManager fm) {
+		SectionsPagerAdapter(FragmentManager fm) {
 			super(fm);
 		}
 

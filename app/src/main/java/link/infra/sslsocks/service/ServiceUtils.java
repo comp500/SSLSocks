@@ -18,7 +18,7 @@ public class ServiceUtils {
 
 	public static void showNotification(Context ctx) {
 		NotificationCompat.Builder mBuilder =
-				new NotificationCompat.Builder(ctx)
+				new NotificationCompat.Builder(ctx, MainActivity.CHANNEL_ID)
 						.setSmallIcon(android.R.color.transparent)
 						.setContentTitle(ctx.getString(R.string.app_name))
 						.setContentText(ctx.getString(R.string.notification_desc))

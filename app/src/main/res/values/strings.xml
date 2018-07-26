@@ -4,6 +4,8 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="notification_desc">Test notification</string>
 
+    <string name="notification_channel">Notification Channel</string>
+
     <!-- Main fragment -->
     <string name="start_button">START</string>
     <string name="stop_button">STOP</string>
