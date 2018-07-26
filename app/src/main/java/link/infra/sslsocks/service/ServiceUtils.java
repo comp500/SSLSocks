@@ -15,6 +15,7 @@ public class ServiceUtils {
 	private static final int NOTIFICATION_ID = 0;
 	public static final String ACTION_LOGBROADCAST = "link.infra.sslsocks.service.action.LOGBROADCAST";
 	public static final String EXTENDED_DATA_LOG = "link.infra.sslsocks.service.action.LOGDATA";
+	public static final String ACTION_CLEARLOG = "link.infra.sslsocks.service.action.CLEARLOG";
 
 	public static void showNotification(Context ctx) {
 		NotificationCompat.Builder mBuilder =
@@ -61,6 +62,12 @@ public class ServiceUtils {
 				new Intent(ACTION_LOGBROADCAST)
 						// Puts the status into the Intent
 						.putExtra(EXTENDED_DATA_LOG, status);
+		// Broadcasts the Intent to receivers in this app.
+		LocalBroadcastManager.getInstance(ctx).sendBroadcast(localIntent);
+	}
+
+	public static void clearLog(Context ctx) {
+		Intent localIntent = new Intent(ACTION_CLEARLOG);
 		// Broadcasts the Intent to receivers in this app.
 		LocalBroadcastManager.getInstance(ctx).sendBroadcast(localIntent);
 	}

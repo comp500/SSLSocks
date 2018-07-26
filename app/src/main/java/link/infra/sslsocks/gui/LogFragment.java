@@ -1,10 +1,12 @@
 package link.infra.sslsocks.gui;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -36,8 +38,7 @@ public class LogFragment extends Fragment {
 	 * @return A new instance of fragment LogFragment.
 	 */
 	public static LogFragment newInstance() {
-		LogFragment fragment = new LogFragment();
-		return fragment;
+		return new LogFragment();
 	}
 
 	@Override
@@ -46,27 +47,42 @@ public class LogFragment extends Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
 		return inflater.inflate(R.layout.fragment_log, container, false);
 	}
 
 	@Override
-	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-		final TextView logText = (TextView) view.findViewById(R.id.logtext);
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		final TextView logText = view.findViewById(R.id.logtext);
+		Activity act = getActivity();
+		if (act == null) {
+			return;
+		}
+		LocalBroadcastManager manager = LocalBroadcastManager.getInstance(act);
+
 		IntentFilter statusIntentFilter = new IntentFilter(ServiceUtils.ACTION_LOGBROADCAST);
 		BroadcastReceiver statusReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				if (intent.hasExtra(ServiceUtils.EXTENDED_DATA_LOG)) {
-					logText.append("\n");
 					logText.append(intent.getStringExtra(ServiceUtils.EXTENDED_DATA_LOG));
+					logText.append("\n");
 					Log.d("received", intent.getStringExtra(ServiceUtils.EXTENDED_DATA_LOG));
 				}
 			}
 		};
-		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(statusReceiver, statusIntentFilter);
+		manager.registerReceiver(statusReceiver, statusIntentFilter);
+
+		IntentFilter clearLogIntentFilter = new IntentFilter(ServiceUtils.ACTION_CLEARLOG);
+		BroadcastReceiver clearLogReceiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				logText.setText("");
+			}
+		};
+		manager.registerReceiver(clearLogReceiver, clearLogIntentFilter);
 	}
 
 }

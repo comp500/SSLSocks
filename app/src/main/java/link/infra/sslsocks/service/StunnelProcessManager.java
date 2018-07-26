@@ -95,6 +95,7 @@ public class StunnelProcessManager {
 		}
 		checkAndExtract(context);
 		setupConfig(context);
+		ServiceUtils.clearLog(context);
 		try {
 			stunnelProcess = Runtime.getRuntime().exec(context.getFilesDir().getPath() + EXECUTABLE + " " + context.getFilesDir().getPath() + CONFIG);
 			readInputStream(context, stunnelProcess.getErrorStream());
