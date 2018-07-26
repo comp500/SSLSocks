@@ -16,8 +16,8 @@
     <string-array name="tabs_array">
         <item>HOME</item>
         <item>LOG</item>
-        <item>PROFILES</item>
-        <item>SETTINGS</item>
+        <!--<item>PROFILES</item>
+        <item>SETTINGS</item>-->
     </string-array>
 
     <string name="log_blank">stunnel hasn\'t been started yet.</string>
