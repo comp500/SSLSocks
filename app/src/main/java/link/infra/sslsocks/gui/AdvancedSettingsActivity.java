@@ -3,7 +3,6 @@ package link.infra.sslsocks.gui;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -156,7 +155,7 @@ public class AdvancedSettingsActivity extends AppCompatPreferenceActivity {
 			//bindPreferenceSummaryToValue(findPreference("example_list"));
 		}
 
-		@Override
+		/*@Override
 		public boolean onOptionsItemSelected(MenuItem item) {
 			int id = item.getItemId();
 			if (id == android.R.id.home) {
@@ -164,6 +163,6 @@ public class AdvancedSettingsActivity extends AppCompatPreferenceActivity {
 				return true;
 			}
 			return super.onOptionsItemSelected(item);
-		}
+		}*/
 	}
 }
