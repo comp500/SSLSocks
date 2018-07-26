@@ -43,13 +43,17 @@ public class ServiceUtils {
 		mBuilder.setContentIntent(resultPendingIntent);
 		NotificationManager mNotificationManager =
 				(NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
-		mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+		if (mNotificationManager != null) {
+			mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+		}
 	}
 
 	public static void removeNotification(Context ctx) {
 		NotificationManager mNotificationManager =
 				(NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
-		mNotificationManager.cancel(NOTIFICATION_ID);
+		if (mNotificationManager != null) {
+			mNotificationManager.cancel(NOTIFICATION_ID);
+		}
 	}
 
 	public static void broadcastLog(Context ctx, String status) {

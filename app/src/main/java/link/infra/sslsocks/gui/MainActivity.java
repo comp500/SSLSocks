@@ -4,6 +4,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,29 +28,13 @@ import android.widget.TextView;
 
 import link.infra.sslsocks.R;
 import link.infra.sslsocks.dummy.DummyContent;
+import link.infra.sslsocks.service.StunnelIntentService;
 import link.infra.sslsocks.service.StunnelProcessManager;
-import link.infra.sslsocks.service.StunnelVpnService;
 
 public class MainActivity extends AppCompatActivity {
 
-	/**
-	 * The {@link android.support.v4.view.PagerAdapter} that will provide
-	 * fragments for each of the sections. We use a
-	 * {@link FragmentPagerAdapter} derivative, which will keep every
-	 * loaded fragment in memory. If this becomes too memory intensive, it
-	 * may be best to switch to a
-	 * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-	 */
-	private SectionsPagerAdapter mSectionsPagerAdapter;
-
-	/**
-	 * The {@link ViewPager} that will host the section contents.
-	 */
-	private ViewPager mViewPager;
 	private FloatingActionButton fabAdd;
-	public final int VPN_PERMISSION = 1;
 	public final int IMPORT_FILE = 2;
-	private StunnelVpnService stunnelService;
 	public static final String CHANNEL_ID = "NOTIFY_CHANNEL_1";
 
 	@Override
@@ -61,10 +46,10 @@ public class MainActivity extends AppCompatActivity {
 		setSupportActionBar(toolbar);
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the activity.
-		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+		SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
 		// Set up the ViewPager with the sections adapter.
-		mViewPager = findViewById(R.id.container);
+		ViewPager mViewPager = findViewById(R.id.container);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 
 		TabLayout tabLayout = findViewById(R.id.tabs);
@@ -98,7 +83,9 @@ public class MainActivity extends AppCompatActivity {
 			// Register the channel with the system; you can't change the importance
 			// or other notification behaviors after this
 			NotificationManager notificationManager = getSystemService(NotificationManager.class);
-			notificationManager.createNotificationChannel(channel);
+			if (notificationManager != null) {
+				notificationManager.createNotificationChannel(channel);
+			}
 		}
 	}
 
@@ -155,7 +142,9 @@ public class MainActivity extends AppCompatActivity {
                                  Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 			TextView textView = rootView.findViewById(R.id.section_label);
-			textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+			if (getArguments() != null) {
+				textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+			}
 			return rootView;
 		}
 	}
@@ -179,13 +168,7 @@ public class MainActivity extends AppCompatActivity {
 					return StartFragment.newInstance(new StartFragment.OnFragmentInteractionListener() {
 						@Override
 						public void onFragmentStartInteraction() {
-							Intent intent = StunnelVpnService.prepare(getApplicationContext());
-							if (intent != null) {
-								startActivityForResult(intent, VPN_PERMISSION);
-							} else {
-								onActivityResult(VPN_PERMISSION, RESULT_OK, null); // already have permission
-							}
-							//StunnelIntentService.start(getApplicationContext());
+							StunnelIntentService.start(getApplicationContext());
 						}
 
 						@Override
@@ -280,24 +263,18 @@ public class MainActivity extends AppCompatActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if (requestCode == VPN_PERMISSION) {
-			if (resultCode == RESULT_OK) {
-				Intent intent = new Intent(this, StunnelVpnService.class);
-				startService(intent);
-			}
-		}
-
 		if (requestCode == IMPORT_FILE) {
 			if (resultCode == RESULT_OK) {
-				String filePath = data.getData().getPath();
-				Log.d("test", filePath);
+				Uri fileData = data.getData();
+				if (fileData != null) {
+					Log.d("test", fileData.getPath());
+				}
 			}
 		}
 	}
 
 	private void stopStunnelService() {
-		//Intent intent = new Intent(this, StunnelIntentService.class);
-		Intent intent = new Intent(this, StunnelVpnService.class);
+		Intent intent = new Intent(this, StunnelIntentService.class);
 		stopService(intent);
 	}
 
