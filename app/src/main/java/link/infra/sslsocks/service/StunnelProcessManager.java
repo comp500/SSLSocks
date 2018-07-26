@@ -12,14 +12,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import static link.infra.sslsocks.Constants.CONFIG;
 import static link.infra.sslsocks.Constants.DEF_CONFIG;
 import static link.infra.sslsocks.Constants.EXECUTABLE;
 import static link.infra.sslsocks.Constants.EXECUTABLE_NOSLASH;
-import static link.infra.sslsocks.Constants.LOG;
 import static link.infra.sslsocks.Constants.PID;
 
 public class StunnelProcessManager {
@@ -71,7 +69,8 @@ public class StunnelProcessManager {
 		try {
 			FileOutputStream fileOutputStream = new FileOutputStream(context.getFilesDir().getPath() + CONFIG);
 			try {
-				fileOutputStream.write(DEF_CONFIG.getBytes());
+				String conf = DEF_CONFIG + context.getFilesDir().getPath() + PID;
+				fileOutputStream.write(conf.getBytes());
 				fileOutputStream.close();
 				return true;
 			} catch (IOException e) {
@@ -98,44 +97,27 @@ public class StunnelProcessManager {
 		setupConfig(context);
 		try {
 			stunnelProcess = Runtime.getRuntime().exec(context.getFilesDir().getPath() + EXECUTABLE + " " + context.getFilesDir().getPath() + CONFIG);
+			readInputStream(context, stunnelProcess.getErrorStream());
+			readInputStream(context, stunnelProcess.getInputStream());
 			stunnelProcess.waitFor();
-			ServiceUtils.broadcastLog(context, readInputStream(stunnelProcess.getErrorStream()));
-			ServiceUtils.broadcastLog(context, readInputStream(stunnelProcess.getInputStream()));
-
-			File file = new File(context.getFilesDir().getPath() + LOG);
-			StringBuilder text = new StringBuilder();
-
-			try {
-				BufferedReader br = new BufferedReader(new FileReader(file));
-				String line;
-
-				while ((line = br.readLine()) != null) {
-					text.append(line);
-					text.append('\n');
-				}
-				br.close();
-			} catch (IOException e) {
-				Log.e(TAG, "Failed to read config file", e);
-			}
-
-			ServiceUtils.broadcastLog(context, text.toString());
 		} catch (IOException e) {
-			Log.e(TAG, "failure", e);
-		} catch (NoSuchElementException e) {
 			Log.e(TAG, "failure", e);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		}
 	}
 
-	public static String readInputStream(InputStream stream) {
-		Scanner scanner = new Scanner(stream);
-		scanner.useDelimiter("\\A");
-		if (scanner.hasNext()) {
-			return scanner.next();
-		} else {
-			return "";
-		}
+	private static void readInputStream(final Context context, final InputStream stream) {
+		Thread streamReader = new Thread(){
+			public void run() {
+				Scanner scanner = new Scanner(stream);
+				//scanner.useDelimiter("\\A");
+				while (scanner.hasNextLine()) {
+					ServiceUtils.broadcastLog(context, scanner.nextLine());
+				}
+			}
+		};
+		streamReader.start();
 	}
 
 	public void stop(Context context) {
@@ -169,7 +151,7 @@ public class StunnelProcessManager {
 		}
 	}
 
-	public boolean isAlive(Context context) {
+	private boolean isAlive(Context context) {
 		return new File(context.getFilesDir().getPath() + PID).exists();
 	}
 }
