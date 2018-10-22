@@ -33,8 +33,12 @@
     </string-array>
     <string name="config_editor_hint">Type file contents…</string>
 
-    <string name="import_pem">Import public/private key</string>
+    <string name="import_pem">Import from file</string>
     <string name="no_keys">You haven\'t imported any keys or certificates. Press the button below to import one, for server or client verification.</string>
+    <string name="title_activity_key_edit">Edit Certificate/Key</string>
+    <string name="title_activity_key_create">New Certificate/Key</string>
+    <string name="file_contents">File contents:</string>
+    <string name="file_name">File name:</string>
 
     <!-- Strings related to Settings -->
 
@@ -42,4 +46,5 @@
     <string name="pref_header_general">General</string>
 
     <string name="pref_title_start_on_boot">Start on boot</string>
+    <string name="delete">Delete</string>
 </resources>

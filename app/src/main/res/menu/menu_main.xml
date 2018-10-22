@@ -8,10 +8,4 @@
         android:title="@string/action_settings"
         app:showAsAction="never"
         android:onClick="openSettings"/>
-    <item
-        android:id="@+id/action_import_file"
-        android:orderInCategory="100"
-        android:title="@string/import_pem"
-        app:showAsAction="never"
-        android:onClick="importExternalFile"/>
 </menu>

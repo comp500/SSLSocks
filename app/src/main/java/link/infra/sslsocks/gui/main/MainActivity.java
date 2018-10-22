@@ -4,7 +4,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,7 +15,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,13 +22,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 
 import link.infra.sslsocks.R;
+import link.infra.sslsocks.gui.keymgmt.KeyEditActivity;
 import link.infra.sslsocks.gui.keymgmt.KeyFragment;
 import link.infra.sslsocks.gui.settings.AdvancedSettingsActivity;
 import link.infra.sslsocks.service.StunnelIntentService;
@@ -39,7 +34,6 @@ import link.infra.sslsocks.service.StunnelProcessManager;
 public class MainActivity extends AppCompatActivity {
 
 	private FloatingActionButton fabAdd;
-	public final int IMPORT_FILE = 2;
 	public static final String CHANNEL_ID = "NOTIFY_CHANNEL_1";
 	private WeakReference<ConfigEditorFragment> cfgEditorFragment;
 	private WeakReference<KeyFragment> keysFragment;
@@ -70,7 +64,8 @@ public class MainActivity extends AppCompatActivity {
 		fabAdd.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				importExternalFile();
+				Intent intent = new Intent(MainActivity.this, KeyEditActivity.class);
+				startActivity(intent);
 			}
 		});
 
@@ -280,50 +275,8 @@ public class MainActivity extends AppCompatActivity {
 		startActivity(intent);
 	}
 
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-
-		if (requestCode == IMPORT_FILE) {
-			if (resultCode == RESULT_OK) {
-				Uri fileData = data.getData();
-				if (fileData != null) {
-					Log.d("test", fileData.getPath());
-					try {
-						InputStream inputStream = getContentResolver().openInputStream(fileData);
-						if (inputStream == null) {
-							return;
-						}
-						BufferedReader reader = new BufferedReader(new InputStreamReader(
-								inputStream));
-						StringBuilder stringBuilder = new StringBuilder();
-						String line;
-						while ((line = reader.readLine()) != null) {
-							stringBuilder.append(line);
-						}
-						inputStream.close();
-						Log.d("data: ", stringBuilder.toString());
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-	}
-
 	private void stopStunnelService() {
 		Intent intent = new Intent(this, StunnelIntentService.class);
 		stopService(intent);
-	}
-
-	public void importExternalFile(MenuItem item) {
-		importExternalFile();
-	}
-
-	public void importExternalFile() {
-		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-		intent.setType("*/*");
-		intent.addCategory(Intent.CATEGORY_OPENABLE);
-		Intent chooserIntent = Intent.createChooser(intent, getString(R.string.title_activity_config_editor));
-		startActivityForResult(chooserIntent, IMPORT_FILE);
 	}
 }
