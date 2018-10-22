@@ -1,9 +1,7 @@
 # SSLSocks
-SSL + socks5 VPN using [stunnel](https://www.stunnel.org/) for Android.
+SSL/TLS tunnel using [stunnel](https://www.stunnel.org/) for Android.
 
-Allows you to easily set up stunnel clientside with android, and tunnel your phone's internet connection through it. This system should bypass most blocks if you have an unblocked domain, as it looks exactly like normal HTTPS traffic.
-
-**Note: Currently does not run as a VPN, only as a HTTPS tunnel!**
+*Note:* Originally intended to be a socks5 VPN through TLS, but I never finished implementing the VPN service.
 
 ## Build instructions
 1. Install Android Studio
