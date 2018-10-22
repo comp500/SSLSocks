@@ -9,5 +9,5 @@
                                         android:layout_marginLeft="16dp"
                                         android:layout_marginRight="16dp"
                                         app:layoutManager="LinearLayoutManager"
-                                        tools:context="link.infra.sslsocks.gui.ServersFragment"
+                                        tools:context="link.infra.sslsocks.gui.main.ServersFragment"
                                         tools:listitem="@layout/fragment_servers" />

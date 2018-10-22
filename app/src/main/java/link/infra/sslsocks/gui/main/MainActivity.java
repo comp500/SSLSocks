@@ -1,4 +1,4 @@
-package link.infra.sslsocks.gui;
+package link.infra.sslsocks.gui.main;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -9,13 +9,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -33,7 +31,7 @@ import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 
 import link.infra.sslsocks.R;
-import link.infra.sslsocks.dummy.DummyContent;
+import link.infra.sslsocks.gui.settings.AdvancedSettingsActivity;
 import link.infra.sslsocks.service.StunnelIntentService;
 import link.infra.sslsocks.service.StunnelProcessManager;
 
@@ -43,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
 	public final int IMPORT_FILE = 2;
 	public static final String CHANNEL_ID = "NOTIFY_CHANNEL_1";
 	private WeakReference<ConfigEditorFragment> cfgEditorFragment;
+	private WeakReference<KeyFragment> keysFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -70,8 +69,7 @@ public class MainActivity extends AppCompatActivity {
 		fabAdd.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-						.setAction("Action", null).show();
+				importExternalFile();
 			}
 		});
 
@@ -191,16 +189,19 @@ public class MainActivity extends AppCompatActivity {
 					cfgEditorFragment = new WeakReference<>(ConfigEditorFragment.newInstance());
 					return cfgEditorFragment.get();
 				case 3:
-					return ServersFragment.newInstance(1, new ServersFragment.OnListFragmentInteractionListener() {
-						@Override
-						public void onListFragmentInteraction(DummyContent.DummyItem item) {
-							AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-							alertDialog.setTitle("hi");
-							alertDialog.setMessage("this is my app");
-
-							alertDialog.show();
-						}
-					});
+					keysFragment = new WeakReference<>(KeyFragment.newInstance());
+					return keysFragment.get();
+//				case 3:
+//					return ServersFragment.newInstance(1, new ServersFragment.OnListFragmentInteractionListener() {
+//						@Override
+//						public void onListFragmentInteraction(DummyContent.DummyItem item) {
+//							AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+//							alertDialog.setTitle("hi");
+//							alertDialog.setMessage("this is my app");
+//
+//							alertDialog.show();
+//						}
+//					});
 				default:
 					return PlaceholderFragment.newInstance(position + 1);
 			}
@@ -314,6 +315,10 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	public void importExternalFile(MenuItem item) {
+		importExternalFile();
+	}
+
+	public void importExternalFile() {
 		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 		intent.setType("*/*");
 		intent.addCategory(Intent.CATEGORY_OPENABLE);

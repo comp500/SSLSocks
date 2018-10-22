@@ -1,4 +1,4 @@
-package link.infra.sslsocks.gui;
+package link.infra.sslsocks.gui.settings;
 
 
 import android.annotation.TargetApi;

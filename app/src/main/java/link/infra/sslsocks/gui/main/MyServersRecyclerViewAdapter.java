@@ -1,4 +1,4 @@
-package link.infra.sslsocks.gui;
+package link.infra.sslsocks.gui.main;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

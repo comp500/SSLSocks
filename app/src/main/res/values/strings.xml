@@ -17,7 +17,7 @@
         <item>HOME</item>
         <item>LOG</item>
         <item>CONFIG</item>
-        <item>KEYS</item>
+        <item>CERTS/KEYS</item>
         <!--<item>PROFILES</item>
         <item>SETTINGS</item>-->
     </string-array>
@@ -34,6 +34,7 @@
     <string name="config_editor_hint">Type file contents…</string>
 
     <string name="import_pem">Import public/private key</string>
+    <string name="no_keys">You haven\'t imported any keys or certificates. Press the button below to import one, for server or client verification.</string>
 
     <!-- Strings related to Settings -->
 

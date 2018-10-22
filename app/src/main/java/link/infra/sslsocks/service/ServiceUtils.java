@@ -9,7 +9,7 @@ import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.LocalBroadcastManager;
 
 import link.infra.sslsocks.R;
-import link.infra.sslsocks.gui.MainActivity;
+import link.infra.sslsocks.gui.main.MainActivity;
 
 public class ServiceUtils {
 	private static final int NOTIFICATION_ID = 1;
