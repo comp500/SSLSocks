@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,16 +28,20 @@ import java.lang.ref.WeakReference;
 import link.infra.sslsocks.R;
 import link.infra.sslsocks.gui.keymgmt.KeyEditActivity;
 import link.infra.sslsocks.gui.keymgmt.KeyFragment;
+import link.infra.sslsocks.gui.keymgmt.KeyRecyclerViewAdapter;
 import link.infra.sslsocks.gui.settings.AdvancedSettingsActivity;
 import link.infra.sslsocks.service.StunnelIntentService;
 import link.infra.sslsocks.service.StunnelProcessManager;
 
-public class MainActivity extends AppCompatActivity {
+import static link.infra.sslsocks.gui.keymgmt.KeyEditActivity.ARG_EXISTING_FILE_NAME;
+
+public class MainActivity extends AppCompatActivity implements KeyFragment.OnListFragmentInteractionListener {
 
 	private FloatingActionButton fabAdd;
 	public static final String CHANNEL_ID = "NOTIFY_CHANNEL_1";
 	private WeakReference<ConfigEditorFragment> cfgEditorFragment;
 	private WeakReference<KeyFragment> keysFragment;
+	private static final int KEY_EDIT_REQUEST = 1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
 			@Override
 			public void onClick(View view) {
 				Intent intent = new Intent(MainActivity.this, KeyEditActivity.class);
-				startActivity(intent);
+				startActivityForResult(intent, KEY_EDIT_REQUEST);
 			}
 		});
 
@@ -278,5 +283,26 @@ public class MainActivity extends AppCompatActivity {
 	private void stopStunnelService() {
 		Intent intent = new Intent(this, StunnelIntentService.class);
 		stopService(intent);
+	}
+
+	public void onListFragmentInteraction(KeyRecyclerViewAdapter.KeyItem item) {
+		Intent intent = new Intent(MainActivity.this, KeyEditActivity.class);
+		intent.putExtra(ARG_EXISTING_FILE_NAME, item.filename);
+		startActivityForResult(intent, KEY_EDIT_REQUEST);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == KEY_EDIT_REQUEST) {
+			if (resultCode == RESULT_OK) {
+				if (keysFragment != null) {
+					KeyFragment frag = keysFragment.get();
+					if (frag != null) {
+						Log.d("hi", "hmm");
+						frag.updateList(this); // Ensure list is up to date
+					}
+				}
+			}
+		}
 	}
 }

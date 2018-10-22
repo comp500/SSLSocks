@@ -13,17 +13,17 @@ import link.infra.sslsocks.R;
 
 public class KeyRecyclerViewAdapter extends RecyclerView.Adapter<KeyRecyclerViewAdapter.ViewHolder> {
 
-	static class KeyItem {
-		final String filename;
+	public static class KeyItem {
+		public final String filename;
 		KeyItem(String filename) {
 			this.filename = filename;
 		}
 	}
 
 	private final List<KeyItem> mValues;
-	private final KeyFragment mListener;
+	private final KeyFragment.OnListFragmentInteractionListener mListener;
 
-	KeyRecyclerViewAdapter(List<KeyItem> items, KeyFragment listener) {
+	KeyRecyclerViewAdapter(List<KeyItem> items, KeyFragment.OnListFragmentInteractionListener listener) {
 		mValues = items;
 		mListener = listener;
 	}

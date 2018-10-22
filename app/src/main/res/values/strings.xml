@@ -34,11 +34,19 @@
     <string name="config_editor_hint">Type file contents…</string>
 
     <string name="import_pem">Import from file</string>
-    <string name="no_keys">You haven\'t imported any keys or certificates. Press the button below to import one, for server or client verification.</string>
+    <string name="no_keys">You haven\'t added any keys or certificates. Press the button below to add one, for server or client verification.</string>
     <string name="title_activity_key_edit">Edit Certificate/Key</string>
     <string name="title_activity_key_create">New Certificate/Key</string>
     <string name="file_contents">File contents:</string>
     <string name="file_name">File name:</string>
+    <string name="file_delete_failed">Failed to delete file</string>
+    <string name="file_delete_err">Internal file deletion error</string>
+    <string name="file_delete_nexist">File does not exist</string>
+    <string name="file_name_required">File name is required</string>
+    <string name="file_name_ext">File name must end with .pem or .p12</string>
+    <string name="file_name_slashes">File name must not contain forward slashes</string>
+    <string name="file_write_fail">Failed to write file</string>
+    <string name="file_read_fail">Failed to read file</string>
 
     <!-- Strings related to Settings -->
 

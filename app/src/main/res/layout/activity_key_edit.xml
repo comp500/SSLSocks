@@ -57,7 +57,8 @@
                 android:layout_columnSpan="2"/>
             <EditText
                 android:id="@+id/file_contents"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
                 android:layout_width="match_parent"
                 android:layout_columnSpan="2"
                 android:ems="10"
@@ -79,18 +80,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="?android:attr/buttonBarButtonStyle"
-                android:text="@android:string/cancel"/>
+                android:text="@android:string/cancel"
+                android:onClick="cancel"/>
             <Button
                 android:id="@+id/delete_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="?android:attr/buttonBarButtonStyle"
+                android:onClick="deleteFile"
                 android:text="@string/delete"/>
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="?android:attr/buttonBarButtonStyle"
-                android:text="@android:string/ok"/>
+                android:text="@android:string/ok"
+                android:onClick="saveFile"/>
         </LinearLayout>
     </LinearLayout>
 
