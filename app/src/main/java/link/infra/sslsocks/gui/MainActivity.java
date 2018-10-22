@@ -221,6 +221,8 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
+	private int previousPosition = 0;
+
 	private void handleTabChange(int position) {
 		switch (position) {
 			case 3:
@@ -230,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
 				fabAdd.hide();
 				break;
 		}
-		if (position != 2) {
+		if (previousPosition == 2) {
 			if (cfgEditorFragment != null) {
 				ConfigEditorFragment frag = cfgEditorFragment.get();
 				if (frag != null) {
@@ -238,6 +240,7 @@ public class MainActivity extends AppCompatActivity {
 				}
 			}
 		}
+		previousPosition = position;
 	}
 
 	TabLayout.OnTabSelectedListener onTabSelectedListener = new TabLayout.OnTabSelectedListener() {
