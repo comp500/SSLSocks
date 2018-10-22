@@ -1,7 +1,8 @@
-package link.infra.sslsocks.gui.main;
+package link.infra.sslsocks.gui.keymgmt;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,7 +34,7 @@ public class KeyFragment extends Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_key_list, container, false);
 
@@ -48,11 +49,11 @@ public class KeyFragment extends Fragment {
 			}
 		}
 
-		RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
+		RecyclerView recyclerView = view.findViewById(R.id.list);
 		recyclerView.setLayoutManager(new LinearLayoutManager(context));
 		recyclerView.setAdapter(new KeyRecyclerViewAdapter(items, this));
 
-		TextView emptyView = (TextView) view.findViewById(R.id.empty_view);
+		TextView emptyView = view.findViewById(R.id.empty_view);
 
 		// Show text if there are no items
 		if (items.isEmpty()) {

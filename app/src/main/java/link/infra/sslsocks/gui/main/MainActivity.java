@@ -31,6 +31,7 @@ import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 
 import link.infra.sslsocks.R;
+import link.infra.sslsocks.gui.keymgmt.KeyFragment;
 import link.infra.sslsocks.gui.settings.AdvancedSettingsActivity;
 import link.infra.sslsocks.service.StunnelIntentService;
 import link.infra.sslsocks.service.StunnelProcessManager;

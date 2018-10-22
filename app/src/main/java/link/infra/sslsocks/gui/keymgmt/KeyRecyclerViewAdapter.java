@@ -1,5 +1,6 @@
-package link.infra.sslsocks.gui.main;
+package link.infra.sslsocks.gui.keymgmt;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,9 +13,9 @@ import link.infra.sslsocks.R;
 
 public class KeyRecyclerViewAdapter extends RecyclerView.Adapter<KeyRecyclerViewAdapter.ViewHolder> {
 
-	public static class KeyItem {
-		public final String filename;
-		public KeyItem(String filename) {
+	static class KeyItem {
+		final String filename;
+		KeyItem(String filename) {
 			this.filename = filename;
 		}
 	}
@@ -22,20 +23,21 @@ public class KeyRecyclerViewAdapter extends RecyclerView.Adapter<KeyRecyclerView
 	private final List<KeyItem> mValues;
 	private final KeyFragment mListener;
 
-	public KeyRecyclerViewAdapter(List<KeyItem> items, KeyFragment listener) {
+	KeyRecyclerViewAdapter(List<KeyItem> items, KeyFragment listener) {
 		mValues = items;
 		mListener = listener;
 	}
 
 	@Override
-	public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+	@NonNull
+	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		View view = LayoutInflater.from(parent.getContext())
 				.inflate(R.layout.fragment_key, parent, false);
 		return new ViewHolder(view);
 	}
 
 	@Override
-	public void onBindViewHolder(final ViewHolder holder, int position) {
+	public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
 		holder.mItem = mValues.get(position);
 		holder.mFileNameView.setText(mValues.get(position).filename);
 
@@ -56,15 +58,15 @@ public class KeyRecyclerViewAdapter extends RecyclerView.Adapter<KeyRecyclerView
 		return mValues.size();
 	}
 
-	public class ViewHolder extends RecyclerView.ViewHolder {
-		public final View mView;
-		public final TextView mFileNameView;
-		public KeyItem mItem;
+	class ViewHolder extends RecyclerView.ViewHolder {
+		final View mView;
+		final TextView mFileNameView;
+		KeyItem mItem;
 
-		public ViewHolder(View view) {
+		ViewHolder(View view) {
 			super(view);
 			mView = view;
-			mFileNameView = (TextView) view.findViewById(R.id.file_name);
+			mFileNameView = view.findViewById(R.id.file_name);
 		}
 	}
 }
