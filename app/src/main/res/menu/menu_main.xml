@@ -9,15 +9,9 @@
         app:showAsAction="never"
         android:onClick="openSettings"/>
     <item
-        android:id="@+id/action_config_editor"
-        android:orderInCategory="100"
-        android:title="@string/title_activity_config_editor"
-        app:showAsAction="never"
-        android:onClick="openConfigEditor"/>
-    <!--<item
         android:id="@+id/action_import_file"
         android:orderInCategory="100"
         android:title="@string/import_pem"
         app:showAsAction="never"
-        android:onClick="importExternalFile"/>-->
+        android:onClick="importExternalFile"/>
 </menu>

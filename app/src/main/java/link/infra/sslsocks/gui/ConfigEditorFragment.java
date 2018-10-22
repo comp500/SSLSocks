@@ -1,12 +1,15 @@
 package link.infra.sslsocks.gui;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -18,7 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Objects;
+import java.lang.ref.WeakReference;
 
 import link.infra.sslsocks.R;
 import link.infra.sslsocks.service.StunnelProcessManager;
@@ -26,39 +29,72 @@ import link.infra.sslsocks.service.StunnelProcessManager;
 import static link.infra.sslsocks.Constants.CONFIG;
 import static link.infra.sslsocks.Constants.PSKSECRETS;
 
-public class ConfigEditorActivity extends AppCompatActivity implements OnItemSelectedListener {
+/**
+ * A fragment to edit text based configuration files
+ */
+public class ConfigEditorFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
-	private static final String TAG = ConfigEditorActivity.class.getSimpleName();
+	public ConfigEditorFragment() {
+		// Required empty public constructor
+	}
+
+	/**
+	 * Use this factory method to create a new instance of
+	 * this fragment using the provided parameters.
+	 *
+	 * @return A new instance of fragment ConfigEditorFragment.
+	 */
+	public static ConfigEditorFragment newInstance() {
+		return new ConfigEditorFragment();
+	}
+
+	@Override
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+	                         Bundle savedInstanceState) {
+		// Inflate the layout for this fragment
+		return inflater.inflate(R.layout.fragment_config_editor, container, false);
+	}
+
+	private static final String TAG = ConfigEditorFragment.class.getSimpleName();
 	private EditText editText;
 	private String selectedFile = CONFIG;
 	private int currentPos = 0;
+	private WeakReference<View> currentView;
+	private String existingContent;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_config_editor);
-		Toolbar toolbar = findViewById(R.id.toolbar);
-		setSupportActionBar(toolbar);
-		Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
-		Spinner spinner = findViewById(R.id.spinner);
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+		Activity act = getActivity();
+		if (act == null) return;
+
+		Spinner spinner = view.findViewById(R.id.spinner);
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(act,
 				R.array.files_array, android.R.layout.simple_spinner_item);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(adapter);
 		spinner.setOnItemSelectedListener(this);
 
+		currentView = new WeakReference<>(view);
+
 		openFile();
 	}
 
 	public void openFile() {
-		editText = findViewById(R.id.editText);
+		Activity act = getActivity();
+		if (act == null) return;
+
+		View view = currentView.get();
+		if (view == null) return;
+
+		editText = view.findViewById(R.id.editText);
 		boolean fileCreated = true;
 		if (selectedFile.equals(CONFIG)) {
-			fileCreated = StunnelProcessManager.setupConfig(this);
+			fileCreated = StunnelProcessManager.setupConfig(act);
 		}
 		if (fileCreated) {
-			File file = new File(this.getFilesDir().getPath() + selectedFile);
+			File file = new File(act.getFilesDir().getPath() + selectedFile);
 			StringBuilder text = new StringBuilder();
 
 			try {
@@ -71,6 +107,7 @@ public class ConfigEditorActivity extends AppCompatActivity implements OnItemSel
 				}
 				br.close();
 				editText.setText(text.toString());
+				existingContent = text.toString();
 			} catch (IOException e) {
 				Log.e(TAG, "Failed to read config file", e);
 				editText.getText().clear();
@@ -88,12 +125,19 @@ public class ConfigEditorActivity extends AppCompatActivity implements OnItemSel
 	}
 
 	public void saveFile() {
+		Activity act = getActivity();
+		if (act == null) return;
+		if (editText.getText().toString().equals(existingContent)) {
+			return; // No changes made
+		}
 		try {
-			FileOutputStream fileOutputStream = new FileOutputStream(this.getFilesDir().getPath() + selectedFile);
+			FileOutputStream fileOutputStream = new FileOutputStream(act.getFilesDir().getPath() + selectedFile);
 			try {
-				fileOutputStream.write(editText.getText().toString().getBytes());
+				String pendingContent = editText.getText().toString();
+				fileOutputStream.write(pendingContent.getBytes());
 				fileOutputStream.close();
-				Toast toast = Toast.makeText(this, R.string.config_editor_saved, Toast.LENGTH_SHORT);
+				existingContent = pendingContent;
+				Toast toast = Toast.makeText(act, R.string.config_editor_saved, Toast.LENGTH_SHORT);
 				toast.show();
 			} catch (IOException e) {
 				Log.e(TAG, "Failed config file writing: ", e);
@@ -135,5 +179,4 @@ public class ConfigEditorActivity extends AppCompatActivity implements OnItemSel
 		}
 		currentPos = pos;
 	}
-
 }

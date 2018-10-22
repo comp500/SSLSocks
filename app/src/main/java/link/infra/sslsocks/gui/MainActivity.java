@@ -26,6 +26,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
+
 import link.infra.sslsocks.R;
 import link.infra.sslsocks.dummy.DummyContent;
 import link.infra.sslsocks.service.StunnelIntentService;
@@ -36,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
 	private FloatingActionButton fabAdd;
 	public final int IMPORT_FILE = 2;
 	public static final String CHANNEL_ID = "NOTIFY_CHANNEL_1";
+	private WeakReference<ConfigEditorFragment> cfgEditorFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -181,6 +188,9 @@ public class MainActivity extends AppCompatActivity {
 				case 1:
 					return LogFragment.newInstance();
 				case 2:
+					cfgEditorFragment = new WeakReference<>(ConfigEditorFragment.newInstance());
+					return cfgEditorFragment.get();
+				case 3:
 					return ServersFragment.newInstance(1, new ServersFragment.OnListFragmentInteractionListener() {
 						@Override
 						public void onListFragmentInteraction(DummyContent.DummyItem item) {
@@ -211,21 +221,29 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-	private void animateFab(int position) {
+	private void handleTabChange(int position) {
 		switch (position) {
-			case 2:
+			case 3:
 				fabAdd.show();
 				break;
 			default:
 				fabAdd.hide();
 				break;
 		}
+		if (position != 2) {
+			if (cfgEditorFragment != null) {
+				ConfigEditorFragment frag = cfgEditorFragment.get();
+				if (frag != null) {
+					frag.saveFile(); // Ensure the file is saved when the user changes tab
+				}
+			}
+		}
 	}
 
 	TabLayout.OnTabSelectedListener onTabSelectedListener = new TabLayout.OnTabSelectedListener() {
 		@Override
 		public void onTabSelected(TabLayout.Tab tab) {
-			animateFab(tab.getPosition());
+			handleTabChange(tab.getPosition());
 		}
 
 		@Override
@@ -244,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
 
 		@Override
 		public void onPageSelected(int position) {
-			animateFab(position);
+			handleTabChange(position);
 		}
 
 		@Override
@@ -257,11 +275,6 @@ public class MainActivity extends AppCompatActivity {
 		startActivity(intent);
 	}
 
-	public void openConfigEditor(MenuItem item) {
-		Intent intent = new Intent(this, ConfigEditorActivity.class);
-		startActivity(intent);
-	}
-
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
@@ -270,6 +283,23 @@ public class MainActivity extends AppCompatActivity {
 				Uri fileData = data.getData();
 				if (fileData != null) {
 					Log.d("test", fileData.getPath());
+					try {
+						InputStream inputStream = getContentResolver().openInputStream(fileData);
+						if (inputStream == null) {
+							return;
+						}
+						BufferedReader reader = new BufferedReader(new InputStreamReader(
+								inputStream));
+						StringBuilder stringBuilder = new StringBuilder();
+						String line;
+						while ((line = reader.readLine()) != null) {
+							stringBuilder.append(line);
+						}
+						inputStream.close();
+						Log.d("data: ", stringBuilder.toString());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}

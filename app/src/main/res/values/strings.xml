@@ -4,7 +4,7 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="notification_desc">SSLSocks Service</string>
 
-    <string name="notification_channel">Notification Channel</string>
+    <string name="notification_channel">Service Notification</string>
 
     <!-- Main fragment -->
     <string name="start_button">START</string>
@@ -16,6 +16,8 @@
     <string-array name="tabs_array">
         <item>HOME</item>
         <item>LOG</item>
+        <item>CONFIG</item>
+        <item>KEYS</item>
         <!--<item>PROFILES</item>
         <item>SETTINGS</item>-->
     </string-array>
@@ -29,6 +31,7 @@
         <item>stunnel.conf</item>
         <item>psksecrets.txt</item>
     </string-array>
+    <string name="config_editor_hint">Type file contents…</string>
 
     <string name="import_pem">Import public/private key</string>
 
