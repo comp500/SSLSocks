@@ -20,10 +20,10 @@ public class ServiceUtils {
 	public static final String ACTION_STOPPED = "link.infra.sslsocks.service.action.STOPPED";
 	public static final String SHOULD_CLEAR_LOG = "link.infra.sslsocks.service.action.SHOULDCLEAR";
 
-	public static void showNotification(StunnelIntentService ctx) {
+	static void showNotification(StunnelIntentService ctx) {
 		NotificationCompat.Builder mBuilder =
 				new NotificationCompat.Builder(ctx, MainActivity.CHANNEL_ID)
-						.setSmallIcon(android.R.color.transparent)
+						.setSmallIcon(R.drawable.ic_info_black_24dp)
 						.setContentTitle(ctx.getString(R.string.app_name))
 						.setContentText(ctx.getString(R.string.notification_desc))
 						.setCategory(NotificationCompat.CATEGORY_SERVICE)
@@ -50,7 +50,7 @@ public class ServiceUtils {
 		ctx.startForeground(NOTIFICATION_ID, mBuilder.build());
 	}
 
-	public static void removeNotification(Context ctx) {
+	static void removeNotification(Context ctx) {
 		NotificationManager mNotificationManager =
 				(NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
 		if (mNotificationManager != null) {
@@ -58,7 +58,7 @@ public class ServiceUtils {
 		}
 	}
 
-	public static void broadcastLog(StunnelIntentService ctx, String status) {
+	static void broadcastLog(StunnelIntentService ctx, String status) {
 		Intent localIntent =
 				new Intent(ACTION_LOGBROADCAST)
 						// Puts the status into the Intent
@@ -72,7 +72,7 @@ public class ServiceUtils {
 		}
 	}
 
-	public static void broadcastPreviousLog(StunnelIntentService ctx) {
+	static void broadcastPreviousLog(StunnelIntentService ctx) {
 		if (ctx.pendingLog == null) return;
 
 		Intent localIntent =
@@ -84,19 +84,19 @@ public class ServiceUtils {
 		LocalBroadcastManager.getInstance(ctx).sendBroadcast(localIntent);
 	}
 
-	public static void broadcastStarted(Context ctx) {
+	static void broadcastStarted(Context ctx) {
 		Intent localIntent = new Intent(ACTION_STARTED);
 		// Broadcasts the Intent to receivers in this app.
 		LocalBroadcastManager.getInstance(ctx).sendBroadcast(localIntent);
 	}
 
-	public static void broadcastStopped(Context ctx) {
+	static void broadcastStopped(Context ctx) {
 		Intent localIntent = new Intent(ACTION_STOPPED);
 		// Broadcasts the Intent to receivers in this app.
 		LocalBroadcastManager.getInstance(ctx).sendBroadcast(localIntent);
 	}
 
-	public static void clearLog(StunnelIntentService ctx) {
+	static void clearLog(StunnelIntentService ctx) {
 		Intent localIntent = new Intent(ACTION_CLEARLOG);
 		// Broadcasts the Intent to receivers in this app.
 		LocalBroadcastManager.getInstance(ctx).sendBroadcast(localIntent);
