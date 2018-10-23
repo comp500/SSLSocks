@@ -94,7 +94,7 @@ public class ConfigEditorFragment extends Fragment implements AdapterView.OnItem
 			fileCreated = StunnelProcessManager.setupConfig(act);
 		}
 		if (fileCreated) {
-			File file = new File(act.getFilesDir().getPath() + selectedFile);
+			File file = new File(act.getFilesDir().getPath() + "/" + selectedFile);
 			StringBuilder text = new StringBuilder();
 
 			try {
@@ -131,7 +131,7 @@ public class ConfigEditorFragment extends Fragment implements AdapterView.OnItem
 			return; // No changes made
 		}
 		try {
-			FileOutputStream fileOutputStream = new FileOutputStream(act.getFilesDir().getPath() + selectedFile);
+			FileOutputStream fileOutputStream = new FileOutputStream(act.getFilesDir().getPath() + "/" + selectedFile);
 			try {
 				String pendingContent = editText.getText().toString();
 				fileOutputStream.write(pendingContent.getBytes());

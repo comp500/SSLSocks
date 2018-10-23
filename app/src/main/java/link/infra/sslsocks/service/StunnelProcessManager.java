@@ -17,7 +17,6 @@ import java.util.Scanner;
 import static link.infra.sslsocks.Constants.CONFIG;
 import static link.infra.sslsocks.Constants.DEF_CONFIG;
 import static link.infra.sslsocks.Constants.EXECUTABLE;
-import static link.infra.sslsocks.Constants.EXECUTABLE_NOSLASH;
 import static link.infra.sslsocks.Constants.PID;
 
 public class StunnelProcessManager {
@@ -25,18 +24,19 @@ public class StunnelProcessManager {
 	private static final String TAG = StunnelProcessManager.class.getSimpleName();
 	private Process stunnelProcess;
 
-	public static boolean checkAndExtract(Context context) {
-		if (new File(context.getFilesDir().getPath() + EXECUTABLE).exists()) {
-			return true; // already extracted
+	public static void checkAndExtract(Context context) {
+		if (new File(context.getFilesDir().getPath() + "/" + EXECUTABLE).exists()) {
+			return; // already extracted
 		}
 
+		//noinspection ResultOfMethodCallIgnored
 		new File(context.getFilesDir().getPath()).mkdir();
 
 		// Extract stunnel exectuable
 		AssetManager am = context.getAssets();
 		try {
-			InputStream in = am.open(EXECUTABLE_NOSLASH);
-			OutputStream out = new FileOutputStream(context.getFilesDir().getPath() + EXECUTABLE);
+			InputStream in = am.open(EXECUTABLE);
+			OutputStream out = new FileOutputStream(context.getFilesDir().getPath() + "/" + EXECUTABLE);
 
 			byte[] buf = new byte[512];
 			int len;
@@ -49,27 +49,26 @@ public class StunnelProcessManager {
 			out.flush();
 			out.close();
 
-			Runtime.getRuntime().exec("chmod 777 " + context.getFilesDir().getPath() + EXECUTABLE);
+			Runtime.getRuntime().exec("chmod 777 " + context.getFilesDir().getPath() + "/" + EXECUTABLE);
 
 			Log.d(TAG, "Extracted stunnel binary successfully");
 		} catch (Exception e) {
 			Log.e(TAG, "Failed stunnel extraction: ", e);
-			return false; // extraction failed
 		}
-		return true; // extraction succeeded
 	}
 
 	public static boolean setupConfig(Context context) {
-		if (new File(context.getFilesDir().getPath() + CONFIG).exists()) {
-			return true; // already extracted
+		if (new File(context.getFilesDir().getPath() + "/" + CONFIG).exists()) {
+			return true; // already created
 		}
 
+		//noinspection ResultOfMethodCallIgnored
 		new File(context.getFilesDir().getPath()).mkdir();
 
 		try {
-			FileOutputStream fileOutputStream = new FileOutputStream(context.getFilesDir().getPath() + CONFIG);
+			FileOutputStream fileOutputStream = new FileOutputStream(context.getFilesDir().getPath() + "/" + CONFIG);
 			try {
-				String conf = DEF_CONFIG + context.getFilesDir().getPath() + PID;
+				String conf = DEF_CONFIG + context.getFilesDir().getPath() + "/" + PID;
 				fileOutputStream.write(conf.getBytes());
 				fileOutputStream.close();
 				return true;
@@ -97,7 +96,9 @@ public class StunnelProcessManager {
 		setupConfig(context);
 		ServiceUtils.clearLog(context);
 		try {
-			stunnelProcess = Runtime.getRuntime().exec(context.getFilesDir().getPath() + EXECUTABLE + " " + context.getFilesDir().getPath() + CONFIG);
+			String[] env = new String[0];
+			File workingDirectory = new File(context.getFilesDir().getPath());
+			stunnelProcess = Runtime.getRuntime().exec(context.getFilesDir().getPath() + "/" + EXECUTABLE + " " + CONFIG, env, workingDirectory);
 			readInputStream(context, stunnelProcess.getErrorStream());
 			readInputStream(context, stunnelProcess.getInputStream());
 			ServiceUtils.broadcastStarted(context);
@@ -122,7 +123,7 @@ public class StunnelProcessManager {
 		streamReader.start();
 	}
 
-	public void stop(Context context) {
+	void stop(Context context) {
 		if (stunnelProcess != null) {
 			stunnelProcess.destroy();
 		}
@@ -130,7 +131,7 @@ public class StunnelProcessManager {
 			String pid = "";
 
 			try {
-				BufferedReader br = new BufferedReader(new FileReader(context.getFilesDir().getPath() + PID));
+				BufferedReader br = new BufferedReader(new FileReader(context.getFilesDir().getPath() + "/" + PID));
 				pid = br.readLine();
 			} catch (IOException e) {
 				Log.e(TAG, "Failed to read PID file", e);
@@ -147,13 +148,14 @@ public class StunnelProcessManager {
 
 				if (isAlive(context)) {
 					// presumed dead, remove pid
-					new File(context.getFilesDir().getPath() + PID).delete();
+					//noinspection ResultOfMethodCallIgnored
+					new File(context.getFilesDir().getPath() + "/" + PID).delete();
 				}
 			}
 		}
 	}
 
 	private boolean isAlive(Context context) {
-		return new File(context.getFilesDir().getPath() + PID).exists();
+		return new File(context.getFilesDir().getPath() + "/" + PID).exists();
 	}
 }
