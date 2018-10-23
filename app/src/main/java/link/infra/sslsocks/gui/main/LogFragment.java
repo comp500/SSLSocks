@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import link.infra.sslsocks.R;
 import link.infra.sslsocks.service.ServiceUtils;
+import link.infra.sslsocks.service.StunnelIntentService;
 
 
 /**
@@ -84,6 +85,12 @@ public class LogFragment extends Fragment {
 			}
 		};
 		manager.registerReceiver(clearLogReceiver, clearLogIntentFilter);
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		StunnelIntentService.checkStatus(getActivity());
 	}
 
 }
