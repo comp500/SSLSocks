@@ -31,7 +31,11 @@ public class StunnelIntentService extends IntentService {
 	public static void start(Context context) {
 		Intent intent = new Intent(context, StunnelIntentService.class);
 		intent.setAction(ACTION_STARTNOVPN);
-		context.startService(intent);
+		if (android.os.Build.VERSION.SDK_INT >= 26) {
+			context.startForegroundService(intent);
+		} else {
+			context.startService(intent);
+		}
 	}
 
 	public static void checkStatus(Context context) {
