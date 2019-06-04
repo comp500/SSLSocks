@@ -1,0 +1,22 @@
+language: android
+dist: trusty
+android:
+  components:
+    - build-tools-28.0.3
+    - android-27
+before_script:
+  - sudo apt-get install unzip -y
+  - wget https://www.stunnel.org/downloads/stunnel-5.54-android.zip -O /tmp/stunnel.zip
+  - unzip /tmp/stunnel.zip stunnel-*-android/stunnel
+  - mkdir -p app/src/main/assets/
+  - cp stunnel-*-android/stunnel app/src/main/assets/
+deploy:
+  provider: releases
+  api_key:
+    secure: CouMKm8K8YNbCUsKstoZFGG21wMvEJnSpAucX7FgSd8Y4LznStlkltAGgFNkBrEJMXchbMsCu5xPuhFv5JYKSLijeWsg6KxjSsURoNCQfMqGQvjp/qbuMUY384HPUzBDj2uOvgZCxrvYc1ifOKe4COrSHopmVdhHsi+rPtdABa2DVMzlGfNDaPxlYZ2raG5HNyrY55AopsoE+7e686114GtfGB+McroXg+TOlIfexoH/laCv7VoEJG0lnJMw0hIbWTkFQuH4O5UzMAtMAzHz/yBBn46vtMKuzPjneOK2t1C53nnCKBEnUIAtq+AVN9Ea6/l7UNp/K0urf7ZATE+JZNi610Yl/itNhgRuVd6YB6ZyuAduEDqVRxyUudy9gphEQkNLY1KT5dFW6otVGW9cLONad6+NZvD3C+qppBA4rSivy1T+QQQJSYUXz2jBqQauIXINSbInWGRbdFDzt2kxiyPNHjlEJIF9/A49F/1EsyMYuTUYaNimlgC3/n52XoiL51k8gBnAoqbkCZc+/n64nGz01wR6/lCMSp7V+0Dtx6nnyjRiggn8k7ndMhymbeuZ+xiL9RNziGJEa3rkBl8AyCQlFJ9dObKp2AGRJijr8O3vyNMtNjY1yaW68O3VyGV4Sx/08kh/lwsWjrdXT1Dx/UNvGT+WOKshSzdkIbCotMM=
+  file: app/build/outputs/apk/debug/app-debug.apk
+  skip_cleanup: true
+  draft: true
+  on:
+    repo: comp500/SSLSocks
+    tags: true
