@@ -1,4 +1,6 @@
 # SSLSocks
+✨ See [this article](https://hamy.io/post/0011/how-to-run-stunnel-on-your-android-device/) by Hamy for an excellent introduction to the app!
+
 SSL/TLS tunnel using [stunnel](https://www.stunnel.org/) for Android.
 
 *Note:* Originally intended to be a socks5 VPN through TLS, but I never finished implementing the VPN service.
