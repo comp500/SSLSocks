@@ -30,7 +30,7 @@ public class StunnelProcessManager {
 
 	private static boolean hasBeenUpdated(Context context) {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-		int versionCode = sharedPreferences.getInt("VERSION_CODE", BuildConfig.VERSION_CODE);
+		int versionCode = sharedPreferences.getInt("VERSION_CODE", 0);
 
 		if (versionCode != BuildConfig.VERSION_CODE) {
 			sharedPreferences.edit().putInt("VERSION_CODE", BuildConfig.VERSION_CODE).apply();
