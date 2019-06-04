@@ -10,6 +10,8 @@ before_script:
   - unzip /tmp/stunnel.zip stunnel-*-android/stunnel
   - mkdir -p app/src/main/assets/
   - cp stunnel-*-android/stunnel app/src/main/assets/
+script:
+  - ./gradlew build assembleDebug
 deploy:
   provider: releases
   api_key:
