@@ -2,16 +2,16 @@ language: android
 dist: trusty
 android:
   components:
-    - build-tools-28.0.3
-    - android-27
+  - build-tools-28.0.3
+  - android-27
 before_script:
-  - sudo apt-get install unzip -y
-  - wget https://www.stunnel.org/downloads/stunnel-5.54-android.zip -O /tmp/stunnel.zip
-  - unzip /tmp/stunnel.zip stunnel-*-android/stunnel
-  - mkdir -p app/src/main/assets/
-  - cp stunnel-*-android/stunnel app/src/main/assets/
+- sudo apt-get install unzip -y
+- wget https://www.stunnel.org/downloads/stunnel-5.54-android.zip -O /tmp/stunnel.zip
+- unzip /tmp/stunnel.zip stunnel-*-android/stunnel
+- mkdir -p app/src/main/assets/
+- cp stunnel-*-android/stunnel app/src/main/assets/
 script:
-  - ./gradlew build assembleDebug
+- "./gradlew build assembleDebug"
 deploy:
   provider: releases
   api_key:
@@ -22,3 +22,6 @@ deploy:
   on:
     repo: comp500/SSLSocks
     tags: true
+before_install:
+- openssl aes-256-cbc -K $encrypted_97db662e41ec_key -iv $encrypted_97db662e41ec_iv
+  -in debug.keystore.enc -out debug.keystore -d
