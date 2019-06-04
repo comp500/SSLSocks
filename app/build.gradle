@@ -7,8 +7,8 @@ android {
         applicationId "link.infra.sslsocks"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 13
-        versionName "0.0.13-beta"
+        versionCode 14
+        versionName "0.0.14-beta"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

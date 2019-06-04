@@ -1,7 +1,9 @@
 package link.infra.sslsocks.service;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -14,6 +16,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Scanner;
 
+import link.infra.sslsocks.BuildConfig;
+
 import static link.infra.sslsocks.Constants.CONFIG;
 import static link.infra.sslsocks.Constants.DEF_CONFIG;
 import static link.infra.sslsocks.Constants.EXECUTABLE;
@@ -24,8 +28,20 @@ public class StunnelProcessManager {
 	private static final String TAG = StunnelProcessManager.class.getSimpleName();
 	private Process stunnelProcess;
 
+	private static boolean hasBeenUpdated(Context context) {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		int versionCode = sharedPreferences.getInt("VERSION_CODE", BuildConfig.VERSION_CODE);
+
+		if (versionCode != BuildConfig.VERSION_CODE) {
+			sharedPreferences.edit().putInt("VERSION_CODE", BuildConfig.VERSION_CODE).apply();
+			return true;
+		}
+		return false;
+	}
+
 	public static void checkAndExtract(Context context) {
-		if (new File(context.getFilesDir().getPath() + "/" + EXECUTABLE).exists()) {
+		File currExec = new File(context.getFilesDir().getPath() + "/" + EXECUTABLE);
+		if (currExec.exists() && !hasBeenUpdated(context)) {
 			return; // already extracted
 		}
 
@@ -88,7 +104,7 @@ public class StunnelProcessManager {
 		}
 	}
 
-	public void start(StunnelIntentService context) {
+	void start(StunnelIntentService context) {
 		if (isAlive(context) || stunnelProcess != null) {
 			stop(context);
 		}
