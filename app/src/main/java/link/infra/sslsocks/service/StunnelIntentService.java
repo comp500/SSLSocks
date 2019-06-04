@@ -12,10 +12,10 @@ import android.support.v4.content.LocalBroadcastManager;
  * a service on a separate handler thread.
  */
 public class StunnelIntentService extends IntentService {
-	public static final String ACTION_STARTNOVPN = "link.infra.sslsocks.service.action.STARTNOVPN";
-	public static final String ACTION_RESUMEACTIVITY = "link.infra.sslsocks.service.action.RESUMEACTIVITY";
+	private static final String ACTION_STARTNOVPN = "link.infra.sslsocks.service.action.STARTNOVPN";
+	private static final String ACTION_RESUMEACTIVITY = "link.infra.sslsocks.service.action.RESUMEACTIVITY";
 
-	private StunnelProcessManager processManager = new StunnelProcessManager();
+	private final StunnelProcessManager processManager = new StunnelProcessManager();
 	public String pendingLog;
 
 	public StunnelIntentService() {

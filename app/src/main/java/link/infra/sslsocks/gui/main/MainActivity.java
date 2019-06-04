@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements KeyFragment.OnLis
 		 * Returns a new instance of this fragment for the given section
 		 * number.
 		 */
-		public static PlaceholderFragment newInstance(int sectionNumber) {
+		static PlaceholderFragment newInstance(int sectionNumber) {
 			PlaceholderFragment fragment = new PlaceholderFragment();
 			Bundle args = new Bundle();
 			args.putInt(ARG_SECTION_NUMBER, sectionNumber);
@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements KeyFragment.OnLis
 	 * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
 	 * one of the sections/tabs/pages.
 	 */
-	public class SectionsPagerAdapter extends FragmentPagerAdapter {
+	class SectionsPagerAdapter extends FragmentPagerAdapter {
 
 		SectionsPagerAdapter(FragmentManager fm) {
 			super(fm);
@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity implements KeyFragment.OnLis
 		previousPosition = position;
 	}
 
-	TabLayout.OnTabSelectedListener onTabSelectedListener = new TabLayout.OnTabSelectedListener() {
+	private final TabLayout.OnTabSelectedListener onTabSelectedListener = new TabLayout.OnTabSelectedListener() {
 		@Override
 		public void onTabSelected(TabLayout.Tab tab) {
 			handleTabChange(tab.getPosition());
@@ -259,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements KeyFragment.OnLis
 		} // nothing needed here
 	};
 
-	ViewPager.OnPageChangeListener onPageChangeListener = new ViewPager.OnPageChangeListener() {
+	private final ViewPager.OnPageChangeListener onPageChangeListener = new ViewPager.OnPageChangeListener() {
 		@Override
 		public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 		} // nothing needed here

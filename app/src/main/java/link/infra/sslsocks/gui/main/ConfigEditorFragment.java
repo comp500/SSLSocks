@@ -81,7 +81,7 @@ public class ConfigEditorFragment extends Fragment implements AdapterView.OnItem
 		openFile();
 	}
 
-	public void openFile() {
+	private void openFile() {
 		Activity act = getActivity();
 		if (act == null) return;
 
@@ -162,7 +162,7 @@ public class ConfigEditorFragment extends Fragment implements AdapterView.OnItem
 		onSelect(0);
 	}
 
-	public void onSelect(int pos) {
+	private void onSelect(int pos) {
 		if (currentPos != pos) {
 			saveFile();
 			switch (pos) {

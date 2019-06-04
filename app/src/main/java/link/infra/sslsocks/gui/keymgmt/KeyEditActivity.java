@@ -26,7 +26,7 @@ import link.infra.sslsocks.R;
 
 public class KeyEditActivity extends AppCompatActivity {
 
-	public final int IMPORT_FILE = 2;
+	private final int IMPORT_FILE = 2;
 	private EditText fileContents;
 	private EditText fileName;
 	private String existingFileName;
@@ -64,7 +64,7 @@ public class KeyEditActivity extends AppCompatActivity {
 		importExternalFile();
 	}
 
-	public void importExternalFile() {
+	private void importExternalFile() {
 		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 		intent.setType("*/*");
 		intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -73,7 +73,7 @@ public class KeyEditActivity extends AppCompatActivity {
 	}
 
 	// Get the file name for importing a file from a Uri
-	public String getFileName(Uri uri) {
+	private String getFileName(Uri uri) {
 		String result = null;
 		if ("content".equals(uri.getScheme())) {
 			try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
@@ -192,7 +192,7 @@ public class KeyEditActivity extends AppCompatActivity {
 		}
 	}
 
-	public void openFile() {
+	private void openFile() {
 		File file = new File(getFilesDir().getPath() + "/" + existingFileName);
 		StringBuilder text = new StringBuilder();
 

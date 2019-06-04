@@ -24,8 +24,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/start_button"
-            android:onClick="startButtonPressed" />
+            android:text="@string/start_button"/>
 
         <Button
             android:id="@+id/stopbutton"

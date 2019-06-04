@@ -25,7 +25,7 @@ public class KeyFragment extends Fragment {
 	private OnListFragmentInteractionListener mListener;
 	private RecyclerView recyclerView;
 	private TextView emptyView;
-	private List<KeyRecyclerViewAdapter.KeyItem> items = new ArrayList<>();
+	private final List<KeyRecyclerViewAdapter.KeyItem> items = new ArrayList<>();
 	/**
 	 * Mandatory empty constructor for the fragment manager to instantiate the
 	 * fragment (e.g. upon screen orientation changes).
