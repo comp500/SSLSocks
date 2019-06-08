@@ -15,16 +15,15 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import link.infra.sslsocks.R;
 import link.infra.sslsocks.service.StunnelProcessManager;
+import okio.BufferedSink;
+import okio.BufferedSource;
+import okio.Okio;
 
 import static link.infra.sslsocks.Constants.CONFIG;
 import static link.infra.sslsocks.Constants.PSKSECRETS;
@@ -95,19 +94,10 @@ public class ConfigEditorFragment extends Fragment implements AdapterView.OnItem
 		}
 		if (fileCreated) {
 			File file = new File(act.getFilesDir().getPath() + "/" + selectedFile);
-			StringBuilder text = new StringBuilder();
-
-			try {
-				BufferedReader br = new BufferedReader(new FileReader(file));
-				String line;
-
-				while ((line = br.readLine()) != null) {
-					text.append(line);
-					text.append('\n');
-				}
-				br.close();
-				editText.setText(text.toString());
-				existingContent = text.toString();
+			try (BufferedSource in = Okio.buffer(Okio.source(file))){
+				String text = in.readUtf8();
+				editText.setText(text);
+				existingContent = text;
 			} catch (IOException e) {
 				Log.e(TAG, "Failed to read config file", e);
 				editText.getText().clear();
@@ -130,25 +120,13 @@ public class ConfigEditorFragment extends Fragment implements AdapterView.OnItem
 		if (editText.getText().toString().equals(existingContent)) {
 			return; // No changes made
 		}
-		try {
-			FileOutputStream fileOutputStream = new FileOutputStream(act.getFilesDir().getPath() + "/" + selectedFile);
-			try {
-				String pendingContent = editText.getText().toString();
-				fileOutputStream.write(pendingContent.getBytes());
-				fileOutputStream.close();
-				existingContent = pendingContent;
-				Toast toast = Toast.makeText(act, R.string.config_editor_saved, Toast.LENGTH_SHORT);
-				toast.show();
-			} catch (IOException e) {
-				Log.e(TAG, "Failed config file writing: ", e);
-				try {
-					// attempt to finally close the file
-					fileOutputStream.close();
-				} catch (IOException e1) {
-					// ignore exception
-				}
-			}
-		} catch (FileNotFoundException e) {
+		try (BufferedSink out = Okio.buffer(Okio.sink(new File(act.getFilesDir().getPath() + "/" + selectedFile)))) {
+			String pendingContent = editText.getText().toString();
+			out.writeUtf8(pendingContent);
+			existingContent = pendingContent;
+			Toast toast = Toast.makeText(act, R.string.config_editor_saved, Toast.LENGTH_SHORT);
+			toast.show();
+		} catch (IOException e) {
 			Log.e(TAG, "Failed config file writing: ", e);
 		}
 	}

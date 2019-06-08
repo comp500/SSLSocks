@@ -46,4 +46,5 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support:support-vector-drawable:27.1.1'
     testImplementation 'junit:junit:4.12'
+    implementation 'com.squareup.okio:okio:2.2.2'
 }

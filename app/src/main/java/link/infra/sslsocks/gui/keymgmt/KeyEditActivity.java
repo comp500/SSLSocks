@@ -12,17 +12,16 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Objects;
 
 import link.infra.sslsocks.R;
+import okio.BufferedSink;
+import okio.BufferedSource;
+import okio.Okio;
 
 public class KeyEditActivity extends AppCompatActivity {
 
@@ -99,25 +98,25 @@ public class KeyEditActivity extends AppCompatActivity {
 			if (resultCode == RESULT_OK) {
 				Uri fileData = data.getData();
 				if (fileData != null) {
+					InputStream inputStream;
 					try {
-						InputStream inputStream = getContentResolver().openInputStream(fileData);
-						if (inputStream == null) {
-							return;
+						inputStream = getContentResolver().openInputStream(fileData);
+						if (inputStream == null) { // Just to keep the linter happy that I'm doing null checks
+							throw new FileNotFoundException();
 						}
-						BufferedReader reader = new BufferedReader(new InputStreamReader(
-								inputStream));
-						StringBuilder stringBuilder = new StringBuilder();
-						String line;
-						while ((line = reader.readLine()) != null) {
-							stringBuilder.append(line);
-							stringBuilder.append("\n");
-						}
-						inputStream.close();
-						fileContents.setText(stringBuilder.toString());
-						fileName.setText(getFileName(fileData));
-					} catch (IOException e) {
-						e.printStackTrace();
+					} catch (FileNotFoundException e) {
+						Log.e(TAG, "Failed to read imported file", e);
+						Toast.makeText(this, R.string.file_read_fail, Toast.LENGTH_SHORT).show();
+						return;
 					}
+					try (BufferedSource in = Okio.buffer(Okio.source(inputStream))) {
+						fileContents.setText(in.readUtf8());
+					} catch (IOException e) {
+						Log.e(TAG, "Failed to read imported file", e);
+						Toast.makeText(this, R.string.file_read_fail, Toast.LENGTH_SHORT).show();
+						return;
+					}
+					fileName.setText(getFileName(fileData));
 				}
 			}
 		}
@@ -138,31 +137,20 @@ public class KeyEditActivity extends AppCompatActivity {
 			return;
 		}
 
-		try {
-			FileOutputStream fileOutputStream = new FileOutputStream(getFilesDir().getPath() + "/" + fileNameString);
-			try {
-				String pendingContent = fileContents.getText().toString();
-				fileOutputStream.write(pendingContent.getBytes());
-				fileOutputStream.close();
-				// If renamed, delete old file
-				if (existingFileName != null && existingFileName.length() > 0 && !existingFileName.equals(fileNameString)) {
-					File existingFile = new File(getFilesDir().getPath() + "/" + existingFileName);
-					//noinspection ResultOfMethodCallIgnored
-					existingFile.delete();
-				}
-				setResult(RESULT_OK);
-				finish();
-			} catch (IOException e) {
-				Toast.makeText(this, R.string.file_write_fail, Toast.LENGTH_SHORT).show();
-				Log.e(TAG, "Failed key file writing: ", e);
-				try {
-					// attempt to finally close the file
-					fileOutputStream.close();
-				} catch (IOException e1) {
-					// ignore exception
-				}
+		File file = new File(getFilesDir().getPath() + "/" + fileNameString);
+		try (BufferedSink out = Okio.buffer(Okio.sink(file))) {
+			String pendingContent = fileContents.getText().toString();
+			out.writeUtf8(pendingContent);
+			out.close();
+			// If renamed, delete old file
+			if (existingFileName != null && existingFileName.length() > 0 && !existingFileName.equals(fileNameString)) {
+				File existingFile = new File(getFilesDir().getPath() + "/" + existingFileName);
+				//noinspection ResultOfMethodCallIgnored
+				existingFile.delete();
 			}
-		} catch (FileNotFoundException e) {
+			setResult(RESULT_OK);
+			finish();
+		} catch (IOException e) {
 			Toast.makeText(this, R.string.file_write_fail, Toast.LENGTH_SHORT).show();
 			Log.e(TAG, "Failed key file writing: ", e);
 		}
@@ -194,18 +182,8 @@ public class KeyEditActivity extends AppCompatActivity {
 
 	private void openFile() {
 		File file = new File(getFilesDir().getPath() + "/" + existingFileName);
-		StringBuilder text = new StringBuilder();
-
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(file));
-			String line;
-
-			while ((line = br.readLine()) != null) {
-				text.append(line);
-				text.append('\n');
-			}
-			br.close();
-			fileContents.setText(text.toString());
+		try (BufferedSource in = Okio.buffer(Okio.source(file))) {
+			fileContents.setText(in.readUtf8());
 		} catch (IOException e) {
 			Log.e(TAG, "Failed to read key file", e);
 			Toast.makeText(this, R.string.file_read_fail, Toast.LENGTH_SHORT).show();

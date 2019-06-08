@@ -6,17 +6,13 @@ import android.content.res.AssetManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Scanner;
 
 import link.infra.sslsocks.BuildConfig;
+import okio.BufferedSink;
+import okio.BufferedSource;
+import okio.Okio;
 
 import static link.infra.sslsocks.Constants.CONFIG;
 import static link.infra.sslsocks.Constants.DEF_CONFIG;
@@ -40,32 +36,22 @@ public class StunnelProcessManager {
 	}
 
 	public static void checkAndExtract(Context context) {
-		File currExec = new File(context.getFilesDir().getPath() + "/" + EXECUTABLE);
-		if (currExec.exists() && !hasBeenUpdated(context)) {
+		File execFile = new File(context.getFilesDir().getPath() + "/" + EXECUTABLE);
+		if (execFile.exists() && !hasBeenUpdated(context)) {
 			return; // already extracted
 		}
 
 		//noinspection ResultOfMethodCallIgnored
-		new File(context.getFilesDir().getPath()).mkdir();
+		execFile.getParentFile().mkdir();
 
 		// Extract stunnel exectuable
 		AssetManager am = context.getAssets();
-		try {
-			InputStream in = am.open(EXECUTABLE);
-			OutputStream out = new FileOutputStream(context.getFilesDir().getPath() + "/" + EXECUTABLE);
+		try (BufferedSource in = Okio.buffer(Okio.source(am.open(EXECUTABLE)));
+		     BufferedSink out = Okio.buffer(Okio.sink(execFile))) {
+			out.writeAll(in);
 
-			byte[] buf = new byte[512];
-			int len;
-
-			while ((len = in.read(buf)) > -1) {
-				out.write(buf, 0, len);
-			}
-
-			in.close();
-			out.flush();
-			out.close();
-
-			Runtime.getRuntime().exec("chmod 777 " + context.getFilesDir().getPath() + "/" + EXECUTABLE);
+			//noinspection ResultOfMethodCallIgnored
+			execFile.setExecutable(true);
 
 			Log.d(TAG, "Extracted stunnel binary successfully");
 		} catch (Exception e) {
@@ -74,38 +60,29 @@ public class StunnelProcessManager {
 	}
 
 	public static boolean setupConfig(Context context) {
-		if (new File(context.getFilesDir().getPath() + "/" + CONFIG).exists()) {
+		File configFile = new File(context.getFilesDir().getPath() + "/" + CONFIG);
+		if (configFile.exists()) {
 			return true; // already created
 		}
 
 		//noinspection ResultOfMethodCallIgnored
-		new File(context.getFilesDir().getPath()).mkdir();
+		configFile.getParentFile().mkdir();
 
-		try {
-			FileOutputStream fileOutputStream = new FileOutputStream(context.getFilesDir().getPath() + "/" + CONFIG);
-			try {
-				String conf = DEF_CONFIG + context.getFilesDir().getPath() + "/" + PID;
-				fileOutputStream.write(conf.getBytes());
-				fileOutputStream.close();
-				return true;
-			} catch (IOException e) {
-				Log.e(TAG, "Failed config file creation: ", e);
-				try {
-					// attempt to finally close the file
-					fileOutputStream.close();
-				} catch (IOException e1) {
-					// ignore exception
-				}
-				return false;
-			}
-		} catch (FileNotFoundException e) {
+		try (BufferedSink out = Okio.buffer(Okio.sink(configFile))) {
+			out.writeUtf8(DEF_CONFIG);
+			out.writeUtf8(context.getFilesDir().getPath());
+			out.writeUtf8("/");
+			out.writeUtf8(PID);
+			return true;
+		} catch (IOException e) {
 			Log.e(TAG, "Failed config file creation: ", e);
 			return false;
 		}
 	}
 
 	void start(StunnelIntentService context) {
-		if (isAlive(context) || stunnelProcess != null) {
+		File pidFile = new File(context.getFilesDir().getPath() + "/" + PID);
+		if (stunnelProcess != null || pidFile.exists()) {
 			stop(context);
 		}
 		checkAndExtract(context);
@@ -115,8 +92,8 @@ public class StunnelProcessManager {
 			String[] env = new String[0];
 			File workingDirectory = new File(context.getFilesDir().getPath());
 			stunnelProcess = Runtime.getRuntime().exec(context.getFilesDir().getPath() + "/" + EXECUTABLE + " " + CONFIG, env, workingDirectory);
-			readInputStream(context, stunnelProcess.getErrorStream());
-			readInputStream(context, stunnelProcess.getInputStream());
+			readInputStream(context, Okio.buffer(Okio.source(stunnelProcess.getErrorStream())));
+			readInputStream(context, Okio.buffer(Okio.source(stunnelProcess.getInputStream())));
 			ServiceUtils.broadcastStarted(context);
 			stunnelProcess.waitFor();
 		} catch (IOException e) {
@@ -126,13 +103,16 @@ public class StunnelProcessManager {
 		}
 	}
 
-	private static void readInputStream(final StunnelIntentService context, final InputStream stream) {
+	private static void readInputStream(final StunnelIntentService context, final BufferedSource in) {
 		Thread streamReader = new Thread(){
 			public void run() {
-				Scanner scanner = new Scanner(stream);
-				//scanner.useDelimiter("\\A");
-				while (scanner.hasNextLine()) {
-					ServiceUtils.broadcastLog(context, scanner.nextLine());
+				String line;
+				try {
+					while ((line = in.readUtf8Line()) != null) {
+						ServiceUtils.broadcastLog(context, line);
+					}
+				} catch (IOException e) {
+					Log.e(TAG, "Error reading stunnel stream: ", e);
 				}
 			}
 		};
@@ -143,35 +123,29 @@ public class StunnelProcessManager {
 		if (stunnelProcess != null) {
 			stunnelProcess.destroy();
 		}
-		if (isAlive(context)) { // still alive!
-			String pid = "";
-
-			try {
-				BufferedReader br = new BufferedReader(new FileReader(context.getFilesDir().getPath() + "/" + PID));
-				pid = br.readLine();
+		File pidFile = new File(context.getFilesDir().getPath() + "/" + PID);
+		if (pidFile.exists()) { // still alive!
+			String pid = null;
+			try (BufferedSource in = Okio.buffer(Okio.source(pidFile))){
+				pid = in.readUtf8Line();
 			} catch (IOException e) {
 				Log.e(TAG, "Failed to read PID file", e);
 			}
 
-			Log.d(TAG, "pid = " + pid);
-
-			if (!pid.trim().equals("")) {
+			if (pid == null || !pid.trim().equals("")) {
+				Log.d(TAG, "Attmepting to kill stunnel, pid = " + pid);
 				try {
 					Runtime.getRuntime().exec("kill " + pid).waitFor();
 				} catch (Exception e) {
 					Log.e(TAG, "Failed to kill stunnel", e);
 				}
 
-				if (isAlive(context)) {
+				if (pidFile.exists()) {
 					// presumed dead, remove pid
 					//noinspection ResultOfMethodCallIgnored
-					new File(context.getFilesDir().getPath() + "/" + PID).delete();
+					pidFile.delete();
 				}
 			}
 		}
-	}
-
-	private boolean isAlive(Context context) {
-		return new File(context.getFilesDir().getPath() + "/" + PID).exists();
 	}
 }
