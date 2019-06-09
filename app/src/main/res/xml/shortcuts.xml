@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="startService"
+        android:enabled="true"
+        android:icon="@mipmap/ic_shortcut"
+        android:shortcutShortLabel="@string/start_service_shortcut_short"
+        android:shortcutLongLabel="@string/start_service_shortcut_long"
+        tools:ignore="UnusedAttribute">
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetPackage="link.infra.sslsocks"
+            android:targetClass="link.infra.sslsocks.gui.main.ServiceShortcutActivity" />
+    </shortcut>
+    <!-- Specify more shortcuts here. -->
+</shortcuts>

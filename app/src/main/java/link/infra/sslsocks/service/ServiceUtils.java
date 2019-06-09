@@ -23,8 +23,8 @@ public class ServiceUtils {
 	static void showNotification(StunnelIntentService ctx) {
 		NotificationCompat.Builder mBuilder =
 				new NotificationCompat.Builder(ctx, MainActivity.CHANNEL_ID)
-						.setSmallIcon(R.drawable.ic_info_black_24dp)
-						.setContentTitle(ctx.getString(R.string.app_name))
+						.setSmallIcon(R.drawable.ic_service_running)
+						.setContentTitle(ctx.getString(R.string.app_name_full))
 						.setContentText(ctx.getString(R.string.notification_desc))
 						.setCategory(NotificationCompat.CATEGORY_SERVICE)
 						.setOngoing(true);

@@ -21,10 +21,18 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.RUN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
+        <activity android:name=".gui.main.ServiceShortcutActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
         <activity
             android:name=".gui.settings.AdvancedSettingsActivity"
             android:label="@string/title_activity_advanced_settings"
@@ -36,7 +44,7 @@
 
         <service
             android:name=".service.StunnelIntentService"
-            android:exported="false"/>
+            android:exported="false" />
 
         <receiver
             android:name=".service.BootReceiver"

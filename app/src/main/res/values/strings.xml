@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">SSLSocks</string>
+    <string name="app_name_full">SSLSocks TLS/SSL tunnel</string>
     <string name="action_settings">Advanced Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
-    <string name="notification_desc">Running</string>
+    <string name="notification_desc">Tunnel running</string>
 
     <string name="notification_channel">Service Notification</string>
 
@@ -55,4 +56,8 @@
 
     <string name="pref_title_start_on_boot">Start on boot</string>
     <string name="delete">Delete</string>
+
+    <!-- Start tunnel shortcut -->
+    <string name="start_service_shortcut_short">Tunnel</string>
+    <string name="start_service_shortcut_long">Start tunnel</string>
 </resources>
