@@ -55,6 +55,8 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".service.ServiceStopReceiver"/>
+
         <activity
             android:name=".gui.keymgmt.KeyEditActivity"
             android:label="@string/title_activity_key_edit"

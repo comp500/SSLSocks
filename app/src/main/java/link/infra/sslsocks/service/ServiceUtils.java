@@ -19,6 +19,7 @@ public class ServiceUtils {
 	public static final String ACTION_STARTED = "link.infra.sslsocks.service.action.STARTED";
 	public static final String ACTION_STOPPED = "link.infra.sslsocks.service.action.STOPPED";
 	public static final String SHOULD_CLEAR_LOG = "link.infra.sslsocks.service.action.SHOULDCLEAR";
+	private static final String ACTION_STOP = "link.infra.sslsocks.service.action.STOP";
 
 	static void showNotification(StunnelIntentService ctx) {
 		NotificationCompat.Builder mBuilder =
@@ -27,6 +28,7 @@ public class ServiceUtils {
 						.setContentTitle(ctx.getString(R.string.app_name_full))
 						.setContentText(ctx.getString(R.string.notification_desc))
 						.setCategory(NotificationCompat.CATEGORY_SERVICE)
+						.setPriority(NotificationCompat.PRIORITY_DEFAULT)
 						.setOngoing(true);
 		// Creates an explicit intent for an Activity in your app
 		Intent resultIntent = new Intent(ctx, MainActivity.class);
@@ -45,6 +47,11 @@ public class ServiceUtils {
 						PendingIntent.FLAG_UPDATE_CURRENT
 				);
 		mBuilder.setContentIntent(resultPendingIntent);
+
+		Intent serviceStopIntent = new Intent(ctx, ServiceStopReceiver.class);
+		serviceStopIntent.setAction(ACTION_STOP);
+		PendingIntent serviceStopIntentPending = PendingIntent.getBroadcast(ctx, 1, serviceStopIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		mBuilder.addAction(R.drawable.ic_stop_black_24dp, "Stop", serviceStopIntentPending);
 
 		// Ensure that the service is a foreground service
 		ctx.startForeground(NOTIFICATION_ID, mBuilder.build());

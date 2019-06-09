@@ -161,7 +161,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/E:/comp500/PCFiles/Software/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/av/ic_play_arrow_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/E:/comp500/PCFiles/Software/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/av/ic_stop_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -172,7 +172,7 @@
                         <option name="values">
                           <map>
                             <entry key="color" value="3f51b5" />
-                            <entry key="outputName" value="ic_play_arrow_black_24dp" />
+                            <entry key="outputName" value="ic_stop_black_24dp" />
                             <entry key="sourceFile" value="C:\Users\comp500" />
                           </map>
                         </option>

@@ -3,7 +3,7 @@ dist: trusty
 android:
   components:
   - build-tools-28.0.3
-  - android-27
+  - android-28
 before_script:
 - sudo apt-get install unzip -y
 - wget https://www.stunnel.org/downloads/stunnel-5.54-android.zip -O /tmp/stunnel.zip
