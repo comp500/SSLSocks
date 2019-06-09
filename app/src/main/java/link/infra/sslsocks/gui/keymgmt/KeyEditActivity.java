@@ -5,8 +5,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -18,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import link.infra.sslsocks.R;
 import okio.BufferedSink;
 import okio.BufferedSource;

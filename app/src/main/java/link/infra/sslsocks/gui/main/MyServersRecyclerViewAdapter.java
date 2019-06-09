@@ -1,7 +1,5 @@
 package link.infra.sslsocks.gui.main;
 
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +7,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import link.infra.sslsocks.R;
 import link.infra.sslsocks.dummy.DummyContent.DummyItem;
 
@@ -71,6 +71,7 @@ public class MyServersRecyclerViewAdapter extends RecyclerView.Adapter<MyServers
 			mContentView = view.findViewById(R.id.content);
 		}
 
+		@NonNull
 		@Override
 		public String toString() {
 			return super.toString() + " '" + mContentView.getText() + "'";

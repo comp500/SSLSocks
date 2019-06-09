@@ -2,10 +2,6 @@ package link.infra.sslsocks.gui.keymgmt;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +10,12 @@ import android.widget.TextView;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import link.infra.sslsocks.R;
 
 /**
@@ -56,7 +57,7 @@ public class KeyFragment extends Fragment {
 	}
 
 	@Override
-	public void onAttach(Context context) {
+	public void onAttach(@NonNull Context context) {
 		super.onAttach(context);
 		if (context instanceof OnListFragmentInteractionListener) {
 			mListener = (OnListFragmentInteractionListener) context;
@@ -94,7 +95,7 @@ public class KeyFragment extends Fragment {
 				items.add(new KeyRecyclerViewAdapter.KeyItem(fileEntry.getName()));
 			}
 		}
-		recyclerView.getAdapter().notifyDataSetChanged();
+		Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
 
 		// Show text if there are no items
 		if (items.isEmpty()) {

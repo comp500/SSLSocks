@@ -2,9 +2,6 @@ package link.infra.sslsocks.gui.main;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +16,9 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import link.infra.sslsocks.R;
 import link.infra.sslsocks.service.StunnelProcessManager;
 import okio.BufferedSink;
@@ -43,7 +43,7 @@ public class ConfigEditorFragment extends Fragment implements AdapterView.OnItem
 	 *
 	 * @return A new instance of fragment ConfigEditorFragment.
 	 */
-	public static ConfigEditorFragment newInstance() {
+	static ConfigEditorFragment newInstance() {
 		return new ConfigEditorFragment();
 	}
 
@@ -114,7 +114,7 @@ public class ConfigEditorFragment extends Fragment implements AdapterView.OnItem
 		super.onPause();
 	}
 
-	public void saveFile() {
+	void saveFile() {
 		Activity act = getActivity();
 		if (act == null) return;
 		if (editText.getText().toString().equals(existingContent)) {

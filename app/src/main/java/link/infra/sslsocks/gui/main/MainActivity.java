@@ -6,15 +6,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,8 +13,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
+
 import java.lang.ref.WeakReference;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import link.infra.sslsocks.R;
 import link.infra.sslsocks.gui.keymgmt.KeyEditActivity;
 import link.infra.sslsocks.gui.keymgmt.KeyFragment;
@@ -161,9 +162,10 @@ public class MainActivity extends AppCompatActivity implements KeyFragment.OnLis
 	class SectionsPagerAdapter extends FragmentPagerAdapter {
 
 		SectionsPagerAdapter(FragmentManager fm) {
-			super(fm);
+			super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
 		}
 
+		@NonNull
 		@Override
 		public Fragment getItem(int position) {
 			// getItem is called to instantiate the fragment for the given page.
@@ -292,6 +294,7 @@ public class MainActivity extends AppCompatActivity implements KeyFragment.OnLis
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == KEY_EDIT_REQUEST) {
 			if (resultCode == RESULT_OK) {
 				if (keysFragment != null) {
