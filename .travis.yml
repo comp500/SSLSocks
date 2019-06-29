@@ -6,7 +6,7 @@ android:
   - android-28
 before_script:
 - sudo apt-get install unzip -y
-- wget https://www.stunnel.org/downloads/stunnel-5.54-android.zip -O /tmp/stunnel.zip
+- wget https://www.stunnel.org/downloads/stunnel-5.55-android.zip -O /tmp/stunnel.zip
 - unzip /tmp/stunnel.zip stunnel-*-android/stunnel
 - mkdir -p app/src/main/assets/
 - cp stunnel-*-android/stunnel app/src/main/assets/
