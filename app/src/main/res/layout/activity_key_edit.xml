@@ -8,15 +8,13 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_height="wrap_content">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            android:background="?attr/colorPrimary"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -30,13 +28,14 @@
             android:layout_height="0dp"
             android:columnCount="2"
             android:layout_weight="1">
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/import_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/import_pem"
-                android:onClick="importExternalFile"
                 android:layout_columnSpan="2"
+                android:insetLeft="4dp"
+                android:insetRight="4dp"
                 android:visibility="gone"/>
             <TextView
                 android:layout_width="wrap_content"
@@ -76,25 +75,27 @@
             android:gravity="center|bottom"
             style="?android:attr/buttonBarStyle"
             android:layout_weight="0">
-            <Button
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/cancel_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="?android:attr/buttonBarButtonStyle"
-                android:text="@android:string/cancel"
-                android:onClick="cancel"/>
-            <Button
+                android:insetLeft="4dp"
+                android:insetRight="4dp"
+                android:text="@android:string/cancel"/>
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/delete_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="?android:attr/buttonBarButtonStyle"
-                android:onClick="deleteFile"
+                android:insetLeft="4dp"
+                android:insetRight="4dp"
                 android:text="@string/delete"/>
-            <Button
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/save_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="?android:attr/buttonBarButtonStyle"
-                android:text="@android:string/ok"
-                android:onClick="saveFile"/>
+                android:insetLeft="4dp"
+                android:insetRight="4dp"
+                android:text="@android:string/ok"/>
         </LinearLayout>
     </LinearLayout>
 

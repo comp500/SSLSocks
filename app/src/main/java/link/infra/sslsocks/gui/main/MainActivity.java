@@ -13,11 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.tabs.TabLayout;
-
-import java.lang.ref.WeakReference;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -25,6 +20,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
+
+import java.lang.ref.WeakReference;
+
 import link.infra.sslsocks.R;
 import link.infra.sslsocks.gui.keymgmt.KeyEditActivity;
 import link.infra.sslsocks.gui.keymgmt.KeyFragment;
@@ -226,13 +227,10 @@ public class MainActivity extends AppCompatActivity implements KeyFragment.OnLis
 	private int previousPosition = 0;
 
 	private void handleTabChange(int position) {
-		switch (position) {
-			case 3:
-				fabAdd.show();
-				break;
-			default:
-				fabAdd.hide();
-				break;
+		if (position == 3) {
+			fabAdd.show();
+		} else {
+			fabAdd.hide();
 		}
 		if (previousPosition == 2) {
 			if (cfgEditorFragment != null) {

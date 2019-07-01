@@ -19,18 +19,22 @@
         android:layout_height="match_parent"
         android:orientation="horizontal">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/startbutton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:insetLeft="4dp"
+            android:insetRight="4dp"
             android:text="@string/start_button"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/stopbutton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:insetLeft="4dp"
+            android:insetRight="4dp"
             android:text="@string/stop_button" />
     </LinearLayout>
 

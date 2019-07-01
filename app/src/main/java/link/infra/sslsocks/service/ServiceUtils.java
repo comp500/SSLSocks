@@ -8,6 +8,7 @@ import android.content.Intent;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.TaskStackBuilder;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import link.infra.sslsocks.R;
 import link.infra.sslsocks.gui.main.MainActivity;
 
@@ -51,7 +52,7 @@ public class ServiceUtils {
 		Intent serviceStopIntent = new Intent(ctx, ServiceStopReceiver.class);
 		serviceStopIntent.setAction(ACTION_STOP);
 		PendingIntent serviceStopIntentPending = PendingIntent.getBroadcast(ctx, 1, serviceStopIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-		mBuilder.addAction(R.drawable.ic_stop_black_24dp, "Stop", serviceStopIntentPending);
+		mBuilder.addAction(R.drawable.ic_stop, "Stop", serviceStopIntentPending);
 
 		// Ensure that the service is a foreground service
 		ctx.startForeground(NOTIFICATION_ID, mBuilder.build());

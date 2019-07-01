@@ -10,14 +10,15 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import link.infra.sslsocks.R;
 import okio.BufferedSink;
 import okio.BufferedSource;
@@ -56,12 +57,35 @@ public class KeyEditActivity extends AppCompatActivity {
 			fileName.setText(existingFileName);
 			openFile();
 		}
+
+		// Add event listeners in code, because onClick doesn't work on 4.4.x for some reason
+		// https://stackoverflow.com/a/54060752/816185
+		findViewById(R.id.import_button).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				importExternalFile();
+			}
+		});
+		findViewById(R.id.delete_button).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				deleteFile();
+			}
+		});
+		findViewById(R.id.cancel_button).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				cancel();
+			}
+		});
+		findViewById(R.id.save_button).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				saveFile();
+			}
+		});
 	}
 
-
-	public void importExternalFile(View view) {
-		importExternalFile();
-	}
 
 	private void importExternalFile() {
 		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -100,6 +124,7 @@ public class KeyEditActivity extends AppCompatActivity {
 				if (fileData != null) {
 					InputStream inputStream;
 					try {
+						// TODO: this doesn't seem to work on Android 4.4.x, for some reason
 						inputStream = getContentResolver().openInputStream(fileData);
 						if (inputStream == null) { // Just to keep the linter happy that I'm doing null checks
 							throw new FileNotFoundException();
@@ -122,7 +147,7 @@ public class KeyEditActivity extends AppCompatActivity {
 		}
 	}
 
-	public void saveFile(View view) {
+	private void saveFile() {
 		String fileNameString = fileName.getText().toString();
 		if (fileNameString.length() < 1) {
 			Toast.makeText(this, R.string.file_name_required, Toast.LENGTH_SHORT).show();
@@ -156,12 +181,12 @@ public class KeyEditActivity extends AppCompatActivity {
 		}
 	}
 
-	public void cancel(View view) {
+	private void cancel() {
 		setResult(RESULT_CANCELED);
 		finish();
 	}
 
-	public void deleteFile(View view) {
+	private void deleteFile() {
 		if (existingFileName != null) {
 			File existingFile = new File(getFilesDir().getPath() + "/" + existingFileName);
 			if (!existingFile.exists()) {
