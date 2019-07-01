@@ -1,8 +1,0 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <SwitchPreference
-        android:defaultValue="false"
-        android:key="start_on_boot"
-        android:title="@string/pref_title_start_on_boot" />
-
-</PreferenceScreen>

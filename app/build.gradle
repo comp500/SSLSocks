@@ -47,4 +47,5 @@ dependencies {
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0-beta02'
     testImplementation 'junit:junit:4.12'
     implementation 'com.squareup.okio:okio:2.2.2'
+    implementation 'androidx.preference:preference:1.1.0-beta01'
 }

@@ -1,0 +1,9 @@
+<androidx.preference.PreferenceScreen
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <SwitchPreferenceCompat
+        app:defaultValue="false"
+        app:key="start_on_boot"
+        app:title="@string/pref_title_start_on_boot" />
+
+</androidx.preference.PreferenceScreen>
