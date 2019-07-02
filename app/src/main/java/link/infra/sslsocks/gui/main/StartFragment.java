@@ -9,15 +9,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
-
-import java.util.Objects;
+import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import java.util.Objects;
+
 import link.infra.sslsocks.R;
 import link.infra.sslsocks.service.ServiceUtils;
 import link.infra.sslsocks.service.StunnelIntentService;
@@ -40,26 +41,23 @@ public class StartFragment extends Fragment {
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		final TextView statusLabel = Objects.requireNonNull(getView()).findViewById(R.id.statuslabel);
+		final SwitchCompat startSwitch = Objects.requireNonNull(getView()).findViewById(R.id.start_switch);
+		startSwitch.setEnabled(true);
+		startSwitch.setText(R.string.run_status_not_running);
 
-		Button startbutton = getView().findViewById(R.id.startbutton);
-		startbutton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				if (mListener != null) {
-					statusLabel.setText(R.string.run_status_label_starting);
-					mListener.onFragmentStartInteraction();
-				}
-			}
-		});
-
-		Button stopbutton = getView().findViewById(R.id.stopbutton);
-		stopbutton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				// Did you press the stop button?
-				// No, did you?
-				if (mListener != null) {
-					statusLabel.setText(R.string.run_status_label_stopping);
-					mListener.onFragmentStopInteraction();
+		startSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+				if (isChecked) {
+					if (mListener != null) {
+						startSwitch.setText(R.string.run_status_starting);
+						mListener.onFragmentStartInteraction();
+					}
+				} else {
+					if (mListener != null) {
+						startSwitch.setText(R.string.run_status_stopping);
+						mListener.onFragmentStopInteraction();
+					}
 				}
 			}
 		});
@@ -74,7 +72,8 @@ public class StartFragment extends Fragment {
 		BroadcastReceiver startedReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				statusLabel.setText(R.string.run_status_label_running);
+				startSwitch.setText(R.string.run_status_running);
+				startSwitch.setChecked(true);
 			}
 		};
 		manager.registerReceiver(startedReceiver, startedIntentFilter);
@@ -83,7 +82,8 @@ public class StartFragment extends Fragment {
 		BroadcastReceiver stoppedReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				statusLabel.setText(R.string.run_status_label);
+				startSwitch.setText(R.string.run_status_not_running);
+				startSwitch.setChecked(false);
 			}
 		};
 		manager.registerReceiver(stoppedReceiver, stoppedIntentFilter);

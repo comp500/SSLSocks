@@ -2,18 +2,9 @@
     <string name="app_name">SSLSocks</string>
     <string name="app_name_full">SSLSocks TLS/SSL tunnel</string>
     <string name="action_settings">Advanced Settings</string>
-    <string name="section_format">Hello World from section: %1$d</string>
     <string name="notification_desc">Tunnel running</string>
 
     <string name="notification_channel">Service Notification</string>
-
-    <!-- Main fragment -->
-    <string name="start_button">START</string>
-    <string name="stop_button">STOP</string>
-    <string name="run_status_label">Not running</string>
-    <string name="run_status_label_running">Running</string>
-    <string name="run_status_label_starting">Starting…</string>
-    <string name="run_status_label_stopping">Stopping…</string>
     <string-array name="tabs_array">
         <item>HOME</item>
         <item>LOG</item>
@@ -22,6 +13,13 @@
         <!--<item>PROFILES</item>
         <item>SETTINGS</item>-->
     </string-array>
+
+    <!-- Main fragment -->
+    <string name="run_status_loading">Loading…</string>
+    <string name="run_status_not_running">Not running</string>
+    <string name="run_status_running">Running</string>
+    <string name="run_status_starting">Starting…</string>
+    <string name="run_status_stopping">Stopping…</string>
 
     <string name="log_blank">stunnel hasn\'t been started yet.</string>
     <string name="title_activity_advanced_settings">Advanced Settings</string>

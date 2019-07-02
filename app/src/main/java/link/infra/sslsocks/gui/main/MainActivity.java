@@ -6,12 +6,9 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements KeyFragment.OnLis
 
 	private FloatingActionButton fabAdd;
 	public static final String CHANNEL_ID = "NOTIFY_CHANNEL_1";
-	private WeakReference<ConfigEditorFragment> cfgEditorFragment;
 	private WeakReference<KeyFragment> keysFragment;
 	private static final int KEY_EDIT_REQUEST = 1;
 
@@ -50,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements KeyFragment.OnLis
 
 		Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
+
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the activity.
 		SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -61,11 +58,9 @@ public class MainActivity extends AppCompatActivity implements KeyFragment.OnLis
 		TabLayout tabLayout = findViewById(R.id.tabs);
 		tabLayout.setupWithViewPager(mViewPager);
 
-		tabLayout.addOnTabSelectedListener(onTabSelectedListener);
 		mViewPager.addOnPageChangeListener(onPageChangeListener);
 
 		fabAdd = findViewById(R.id.fab);
-		fabAdd.hide();
 		fabAdd.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -119,43 +114,6 @@ public class MainActivity extends AppCompatActivity implements KeyFragment.OnLis
 	}
 
 	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-	public static class PlaceholderFragment extends Fragment {
-		/**
-		 * The fragment argument representing the section number for this
-		 * fragment.
-		 */
-		private static final String ARG_SECTION_NUMBER = "section_number";
-
-		public PlaceholderFragment() {
-		}
-
-		/**
-		 * Returns a new instance of this fragment for the given section
-		 * number.
-		 */
-		static PlaceholderFragment newInstance(int sectionNumber) {
-			PlaceholderFragment fragment = new PlaceholderFragment();
-			Bundle args = new Bundle();
-			args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-			fragment.setArguments(args);
-			return fragment;
-		}
-
-		@Override
-		public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-			TextView textView = rootView.findViewById(R.id.section_label);
-			if (getArguments() != null) {
-				textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-			}
-			return rootView;
-		}
-	}
-
-	/**
 	 * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
 	 * one of the sections/tabs/pages.
 	 */
@@ -188,8 +146,7 @@ public class MainActivity extends AppCompatActivity implements KeyFragment.OnLis
 				case 1:
 					return LogFragment.newInstance();
 				case 2:
-					cfgEditorFragment = new WeakReference<>(ConfigEditorFragment.newInstance());
-					return cfgEditorFragment.get();
+					return ConfigEditorFragment.newInstance();
 				case 3:
 					keysFragment = new WeakReference<>(KeyFragment.newInstance());
 					return keysFragment.get();
@@ -204,9 +161,9 @@ public class MainActivity extends AppCompatActivity implements KeyFragment.OnLis
 //							alertDialog.show();
 //						}
 //					});
-				default:
-					return PlaceholderFragment.newInstance(position + 1);
 			}
+
+			throw new RuntimeException("Invalid fragment reached");
 		}
 
 		@Override
@@ -224,53 +181,21 @@ public class MainActivity extends AppCompatActivity implements KeyFragment.OnLis
 		}
 	}
 
-	private int previousPosition = 0;
-
-	private void handleTabChange(int position) {
-		if (position == 3) {
-			fabAdd.show();
-		} else {
-			fabAdd.hide();
-		}
-		if (previousPosition == 2) {
-			if (cfgEditorFragment != null) {
-				ConfigEditorFragment frag = cfgEditorFragment.get();
-				if (frag != null) {
-					frag.saveFile(); // Ensure the file is saved when the user changes tab
-				}
-			}
-		}
-		previousPosition = position;
-	}
-
-	private final TabLayout.OnTabSelectedListener onTabSelectedListener = new TabLayout.OnTabSelectedListener() {
-		@Override
-		public void onTabSelected(TabLayout.Tab tab) {
-			handleTabChange(tab.getPosition());
-		}
-
-		@Override
-		public void onTabUnselected(TabLayout.Tab tab) {
-		} // nothing needed here
-
-		@Override
-		public void onTabReselected(TabLayout.Tab tab) {
-		} // nothing needed here
-	};
-
 	private final ViewPager.OnPageChangeListener onPageChangeListener = new ViewPager.OnPageChangeListener() {
 		@Override
-		public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-		} // nothing needed here
+		public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {} // nothing needed here
 
 		@Override
 		public void onPageSelected(int position) {
-			handleTabChange(position);
+			if (position == 3) {
+				fabAdd.show();
+			} else {
+				fabAdd.hide();
+			}
 		}
 
 		@Override
-		public void onPageScrollStateChanged(int state) {
-		} // nothing needed here
+		public void onPageScrollStateChanged(int state) {} // nothing needed here
 	};
 
 	public void openSettings(MenuItem item) {
