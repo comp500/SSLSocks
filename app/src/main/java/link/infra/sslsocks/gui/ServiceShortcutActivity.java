@@ -1,4 +1,4 @@
-package link.infra.sslsocks.gui.main;
+package link.infra.sslsocks.gui;
 
 import android.app.Activity;
 import android.os.Bundle;

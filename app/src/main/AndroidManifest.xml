@@ -17,7 +17,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".gui.main.AdvancedSettingsActivity"
+            android:name=".gui.AdvancedSettingsActivity"
             android:label="@string/title_activity_advanced_settings"
             android:parentActivityName=".gui.main.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -41,7 +41,7 @@
                 android:resource="@xml/shortcuts" />
         </activity>
         <activity
-            android:name=".gui.main.ServiceShortcutActivity"
+            android:name=".gui.ServiceShortcutActivity"
             android:exported="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 

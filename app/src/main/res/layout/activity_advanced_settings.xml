@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".gui.main.AdvancedSettingsActivity">
+    tools:context=".gui.AdvancedSettingsActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -20,7 +20,7 @@
 
     <fragment
         android:id="@+id/fragment"
-        android:name="link.infra.sslsocks.gui.main.AdvancedSettingsActivity$AdvancedSettingsActivityFragment"
+        android:name="link.infra.sslsocks.gui.AdvancedSettingsActivity$AdvancedSettingsActivityFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />

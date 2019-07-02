@@ -1,12 +1,13 @@
-package link.infra.sslsocks.gui.main;
+package link.infra.sslsocks.gui;
 
 import android.os.Bundle;
-
-import java.util.Objects;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.preference.PreferenceFragmentCompat;
+
+import java.util.Objects;
+
 import link.infra.sslsocks.R;
 
 public class AdvancedSettingsActivity extends AppCompatActivity {

@@ -24,6 +24,7 @@ import com.google.android.material.tabs.TabLayout;
 import java.lang.ref.WeakReference;
 
 import link.infra.sslsocks.R;
+import link.infra.sslsocks.gui.AdvancedSettingsActivity;
 import link.infra.sslsocks.gui.keymgmt.KeyEditActivity;
 import link.infra.sslsocks.gui.keymgmt.KeyFragment;
 import link.infra.sslsocks.gui.keymgmt.KeyRecyclerViewAdapter;
