@@ -4,6 +4,13 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorOnPrimary">@color/overColor</item>
+        <item name="colorOnSecondary">@color/overColor</item>
+        <item name="android:itemTextAppearance">@style/PopupMenuTextAppearance</item>
+    </style>
+
+    <style name="PopupMenuTextAppearance" parent="TextAppearance.AppCompat.Menu">
+        <item name="android:textColor">?attr/colorOnBackground</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

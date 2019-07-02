@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -33,6 +35,7 @@ public class KeyEditActivity extends AppCompatActivity {
 	public static final String ARG_EXISTING_FILE_NAME = "EXISTING_FILE_NAME";
 
 	private static final String TAG = KeyEditActivity.class.getSimpleName();
+	private boolean showDelete = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +44,7 @@ public class KeyEditActivity extends AppCompatActivity {
 		Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_black_24dp);
 
 		fileContents = findViewById(R.id.file_contents);
 		fileName = findViewById(R.id.file_name);
@@ -52,7 +56,8 @@ public class KeyEditActivity extends AppCompatActivity {
 		if (existingFileName == null) {
 			getSupportActionBar().setTitle(R.string.title_activity_key_create);
 			findViewById(R.id.import_button).setVisibility(View.VISIBLE);
-			findViewById(R.id.delete_button).setVisibility(View.GONE);
+			showDelete = false;
+			invalidateOptionsMenu();
 		} else {
 			fileName.setText(existingFileName);
 			openFile();
@@ -66,26 +71,41 @@ public class KeyEditActivity extends AppCompatActivity {
 				importExternalFile();
 			}
 		});
-		findViewById(R.id.delete_button).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				deleteFile();
-			}
-		});
-		findViewById(R.id.cancel_button).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				cancel();
-			}
-		});
-		findViewById(R.id.save_button).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				saveFile();
-			}
-		});
 	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.menu_key_edit, menu);
+		if (!showDelete) {
+			menu.findItem(R.id.action_delete).setVisible(false);
+		}
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+
+		if (id == R.id.action_save) {
+			saveFile();
+			return true;
+		}
+		if (id == android.R.id.home) {
+			setResult(RESULT_CANCELED);
+			finish();
+			return true;
+		}
+		if (id == R.id.action_delete) {
+			deleteFile();
+			return true;
+		}
+
+		return super.onOptionsItemSelected(item);
+	}
 
 	private void importExternalFile() {
 		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -179,11 +199,6 @@ public class KeyEditActivity extends AppCompatActivity {
 			Toast.makeText(this, R.string.file_write_fail, Toast.LENGTH_SHORT).show();
 			Log.e(TAG, "Failed key file writing: ", e);
 		}
-	}
-
-	private void cancel() {
-		setResult(RESULT_CANCELED);
-		finish();
 	}
 
 	private void deleteFile() {

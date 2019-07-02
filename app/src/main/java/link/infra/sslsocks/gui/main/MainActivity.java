@@ -108,6 +108,8 @@ public class MainActivity extends AppCompatActivity implements KeyFragment.OnLis
 
 		//noinspection SimplifiableIfStatement
 		if (id == R.id.action_settings) {
+			Intent intent = new Intent(this, AdvancedSettingsActivity.class);
+			startActivity(intent);
 			return true;
 		}
 
@@ -198,11 +200,6 @@ public class MainActivity extends AppCompatActivity implements KeyFragment.OnLis
 		@Override
 		public void onPageScrollStateChanged(int state) {} // nothing needed here
 	};
-
-	public void openSettings(MenuItem item) {
-		Intent intent = new Intent(this, AdvancedSettingsActivity.class);
-		startActivity(intent);
-	}
 
 	private void stopStunnelService() {
 		Intent intent = new Intent(this, StunnelIntentService.class);

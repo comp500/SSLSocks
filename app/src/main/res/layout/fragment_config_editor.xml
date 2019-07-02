@@ -6,23 +6,23 @@
     tools:context=".gui.main.ConfigEditorFragment"
     android:orientation="vertical">
 
-        <Spinner
-            android:id="@+id/spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"/>
-        <EditText
-            android:id="@+id/editText"
-            android:layout_height="match_parent"
-            android:layout_width="match_parent"
-            android:ems="10"
-            android:gravity="top|start"
-            android:inputType="textMultiLine"
-            android:background="@android:color/transparent"
-            android:textCursorDrawable="@null"
-            android:padding="5dp"
-            android:importantForAutofill="no"
-            android:hint="@string/config_editor_hint"
-            tools:ignore="UnusedAttribute" />
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"/>
+    <EditText
+        android:id="@+id/editText"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:ems="10"
+        android:gravity="top|start"
+        android:inputType="textMultiLine|textNoSuggestions"
+        android:background="@android:color/transparent"
+        android:textCursorDrawable="@null"
+        android:padding="5dp"
+        android:importantForAutofill="no"
+        android:hint="@string/config_editor_hint"
+        tools:ignore="UnusedAttribute" />
 
 </LinearLayout>
