@@ -8,6 +8,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 
 import link.infra.sslsocks.BuildConfig;
 import okio.BufferedSink;
@@ -111,6 +112,10 @@ public class StunnelProcessManager {
 						context.appendLog(line);
 					}
 				} catch (IOException e) {
+					if (e instanceof InterruptedIOException) {
+						// This is fine, it quit
+						return;
+					}
 					Log.e(TAG, "Error reading stunnel stream: ", e);
 				}
 			}
