@@ -1,10 +1,6 @@
 package link.infra.sslsocks.gui.main;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,9 +10,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.lifecycle.Observer;
+
 import link.infra.sslsocks.R;
-import link.infra.sslsocks.service.ServiceUtils;
 import link.infra.sslsocks.service.StunnelIntentService;
 
 
@@ -55,37 +51,13 @@ public class LogFragment extends Fragment {
 		if (act == null) {
 			return;
 		}
-		LocalBroadcastManager manager = LocalBroadcastManager.getInstance(act);
 
-		IntentFilter statusIntentFilter = new IntentFilter(ServiceUtils.ACTION_LOGBROADCAST);
-		BroadcastReceiver statusReceiver = new BroadcastReceiver() {
+		StunnelIntentService.logData.observe(getViewLifecycleOwner(), new Observer<String>() {
 			@Override
-			public void onReceive(Context context, Intent intent) {
-				if (intent.hasExtra(ServiceUtils.SHOULD_CLEAR_LOG)) {
-					logText.setText("");
-				}
-				if (intent.hasExtra(ServiceUtils.EXTENDED_DATA_LOG)) {
-					logText.append(intent.getStringExtra(ServiceUtils.EXTENDED_DATA_LOG));
-					logText.append("\n");
-				}
+			public void onChanged(String s) {
+				logText.setText(s);
 			}
-		};
-		manager.registerReceiver(statusReceiver, statusIntentFilter);
-
-		IntentFilter clearLogIntentFilter = new IntentFilter(ServiceUtils.ACTION_CLEARLOG);
-		BroadcastReceiver clearLogReceiver = new BroadcastReceiver() {
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				logText.setText("");
-			}
-		};
-		manager.registerReceiver(clearLogReceiver, clearLogIntentFilter);
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		StunnelIntentService.checkStatus(getActivity());
+		});
 	}
 
 }

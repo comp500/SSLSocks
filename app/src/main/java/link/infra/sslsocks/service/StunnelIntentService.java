@@ -1,14 +1,19 @@
 package link.infra.sslsocks.service;
 
 import android.app.IntentService;
-import android.content.BroadcastReceiver;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.TaskStackBuilder;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import link.infra.sslsocks.R;
+import link.infra.sslsocks.gui.main.MainActivity;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -18,11 +23,17 @@ public class StunnelIntentService extends IntentService {
 	private static final String ACTION_STARTNOVPN = "link.infra.sslsocks.service.action.STARTNOVPN";
 	private static final String ACTION_RESUMEACTIVITY = "link.infra.sslsocks.service.action.RESUMEACTIVITY";
 
+	private static final int NOTIFICATION_ID = 1;
+	private static final String ACTION_STOP = "link.infra.sslsocks.service.action.STOP";
+
 	private static final MutableLiveData<Boolean> privateIsRunning = new MutableLiveData<>();
 	public static final LiveData<Boolean> isRunning = privateIsRunning;
 
+	private static final MutableLiveData<String> logDataPrivate = new MutableLiveData<>();
+	public static final LiveData<String> logData = logDataPrivate;
+	private String currLogValue = "";
+
 	private final StunnelProcessManager processManager = new StunnelProcessManager();
-	public String pendingLog;
 
 	public StunnelIntentService() {
 		super("StunnelIntentService");
@@ -65,26 +76,69 @@ public class StunnelIntentService extends IntentService {
 	 * parameters.
 	 */
 	private void handleStart() {
-		LocalBroadcastManager manager = LocalBroadcastManager.getInstance(this);
-		IntentFilter resumeIntentFilter = new IntentFilter(ACTION_RESUMEACTIVITY);
-		final StunnelIntentService ctx = this;
-		BroadcastReceiver resumeReceiver = new BroadcastReceiver() {
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				ServiceUtils.broadcastPreviousLog(ctx);
-			}
-		};
-		manager.registerReceiver(resumeReceiver, resumeIntentFilter);
-
 		privateIsRunning.postValue(true);
-		ServiceUtils.showNotification(this);
+		showNotification();
 		processManager.start(this);
 	}
 
 	public void onDestroy() {
 		processManager.stop(this);
-		ServiceUtils.removeNotification(this);
+		removeNotification();
 		privateIsRunning.postValue(false);
 		super.onDestroy();
+	}
+
+	public void appendLog(String value) {
+		currLogValue += value + "\n";
+		logDataPrivate.postValue(currLogValue);
+	}
+
+	public void clearLog() {
+		currLogValue = "";
+		logDataPrivate.postValue(currLogValue);
+	}
+
+	private void showNotification() {
+		NotificationCompat.Builder mBuilder =
+				new NotificationCompat.Builder(this, MainActivity.CHANNEL_ID)
+						.setSmallIcon(R.drawable.ic_service_running)
+						.setContentTitle(getString(R.string.app_name_full))
+						.setContentText(getString(R.string.notification_desc))
+						.setCategory(NotificationCompat.CATEGORY_SERVICE)
+						.setPriority(NotificationCompat.PRIORITY_DEFAULT)
+						.setOngoing(true);
+		// Creates an explicit intent for an Activity in your app
+		Intent resultIntent = new Intent(this, MainActivity.class);
+		// The stack builder object will contain an artificial back stack for the
+		// started Activity.
+		// This ensures that navigating backward from the Activity leads out of
+		// your application to the Home screen.
+		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+		// Adds the back stack for the Intent (but not the Intent itself)
+		stackBuilder.addParentStack(MainActivity.class);
+		// Adds the Intent that starts the Activity to the top of the stack
+		stackBuilder.addNextIntent(resultIntent);
+		PendingIntent resultPendingIntent =
+				stackBuilder.getPendingIntent(
+						0,
+						PendingIntent.FLAG_UPDATE_CURRENT
+				);
+		mBuilder.setContentIntent(resultPendingIntent);
+
+		Intent serviceStopIntent = new Intent(this, ServiceStopReceiver.class);
+		serviceStopIntent.setAction(ACTION_STOP);
+		PendingIntent serviceStopIntentPending = PendingIntent.getBroadcast(this, 1, serviceStopIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		mBuilder.addAction(R.drawable.ic_stop, "Stop", serviceStopIntentPending);
+
+		// Ensure that the service is a foreground service
+		startForeground(NOTIFICATION_ID, mBuilder.build());
+	}
+
+	private void removeNotification() {
+		NotificationManager mNotificationManager =
+				(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		if (mNotificationManager != null) {
+			mNotificationManager.cancel(NOTIFICATION_ID);
+		}
 	}
 }

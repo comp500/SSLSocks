@@ -229,4 +229,10 @@ public class MainActivity extends AppCompatActivity implements KeyFragment.OnLis
 			}
 		}
 	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		StunnelIntentService.checkStatus(this);
+	}
 }

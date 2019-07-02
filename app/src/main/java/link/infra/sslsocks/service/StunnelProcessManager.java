@@ -87,7 +87,7 @@ public class StunnelProcessManager {
 		}
 		checkAndExtract(context);
 		setupConfig(context);
-		ServiceUtils.clearLog(context);
+		context.clearLog();
 		try {
 			String[] env = new String[0];
 			File workingDirectory = new File(context.getFilesDir().getPath());
@@ -108,7 +108,7 @@ public class StunnelProcessManager {
 				String line;
 				try {
 					while ((line = in.readUtf8Line()) != null) {
-						ServiceUtils.broadcastLog(context, line);
+						context.appendLog(line);
 					}
 				} catch (IOException e) {
 					Log.e(TAG, "Error reading stunnel stream: ", e);
