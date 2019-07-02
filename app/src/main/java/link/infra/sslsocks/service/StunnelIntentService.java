@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 /**
@@ -15,6 +17,9 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 public class StunnelIntentService extends IntentService {
 	private static final String ACTION_STARTNOVPN = "link.infra.sslsocks.service.action.STARTNOVPN";
 	private static final String ACTION_RESUMEACTIVITY = "link.infra.sslsocks.service.action.RESUMEACTIVITY";
+
+	private static final MutableLiveData<Boolean> privateIsRunning = new MutableLiveData<>();
+	public static final LiveData<Boolean> isRunning = privateIsRunning;
 
 	private final StunnelProcessManager processManager = new StunnelProcessManager();
 	public String pendingLog;
@@ -66,12 +71,12 @@ public class StunnelIntentService extends IntentService {
 		BroadcastReceiver resumeReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				ServiceUtils.broadcastStarted(ctx);
 				ServiceUtils.broadcastPreviousLog(ctx);
 			}
 		};
 		manager.registerReceiver(resumeReceiver, resumeIntentFilter);
 
+		privateIsRunning.postValue(true);
 		ServiceUtils.showNotification(this);
 		processManager.start(this);
 	}
@@ -79,7 +84,7 @@ public class StunnelIntentService extends IntentService {
 	public void onDestroy() {
 		processManager.stop(this);
 		ServiceUtils.removeNotification(this);
-		ServiceUtils.broadcastStopped(this);
+		privateIsRunning.postValue(false);
 		super.onDestroy();
 	}
 }

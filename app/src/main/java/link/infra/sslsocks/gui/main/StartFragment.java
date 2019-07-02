@@ -1,10 +1,5 @@
 package link.infra.sslsocks.gui.main;
 
-import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,12 +10,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Observer;
 
 import java.util.Objects;
 
 import link.infra.sslsocks.R;
-import link.infra.sslsocks.service.ServiceUtils;
 import link.infra.sslsocks.service.StunnelIntentService;
 
 
@@ -45,7 +40,7 @@ public class StartFragment extends Fragment {
 		startSwitch.setEnabled(true);
 		startSwitch.setText(R.string.run_status_not_running);
 
-		startSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		final CompoundButton.OnCheckedChangeListener changeListener = new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
 				if (isChecked) {
@@ -60,33 +55,29 @@ public class StartFragment extends Fragment {
 					}
 				}
 			}
-		});
+		};
+		startSwitch.setOnCheckedChangeListener(changeListener);
 
-		Activity act = getActivity();
+		FragmentActivity act = getActivity();
 		if (act == null) {
 			return;
 		}
-		LocalBroadcastManager manager = LocalBroadcastManager.getInstance(act);
-
-		IntentFilter startedIntentFilter = new IntentFilter(ServiceUtils.ACTION_STARTED);
-		BroadcastReceiver startedReceiver = new BroadcastReceiver() {
+		StunnelIntentService.isRunning.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
 			@Override
-			public void onReceive(Context context, Intent intent) {
-				startSwitch.setText(R.string.run_status_running);
-				startSwitch.setChecked(true);
+			public void onChanged(Boolean aBoolean) {
+				if (aBoolean) {
+					startSwitch.setText(R.string.run_status_running);
+					startSwitch.setOnCheckedChangeListener(null);
+					startSwitch.setChecked(true);
+					startSwitch.setOnCheckedChangeListener(changeListener);
+				} else {
+					startSwitch.setText(R.string.run_status_not_running);
+					startSwitch.setOnCheckedChangeListener(null);
+					startSwitch.setChecked(false);
+					startSwitch.setOnCheckedChangeListener(changeListener);
+				}
 			}
-		};
-		manager.registerReceiver(startedReceiver, startedIntentFilter);
-
-		IntentFilter stoppedIntentFilter = new IntentFilter(ServiceUtils.ACTION_STOPPED);
-		BroadcastReceiver stoppedReceiver = new BroadcastReceiver() {
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				startSwitch.setText(R.string.run_status_not_running);
-				startSwitch.setChecked(false);
-			}
-		};
-		manager.registerReceiver(stoppedReceiver, stoppedIntentFilter);
+		});
 	}
 
 	/**

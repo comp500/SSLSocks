@@ -12,7 +12,7 @@
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/start_switch"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:checked="false"
         android:enabled="false"
         android:text="@string/run_status_loading"/>

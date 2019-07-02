@@ -94,7 +94,6 @@ public class StunnelProcessManager {
 			stunnelProcess = Runtime.getRuntime().exec(context.getFilesDir().getPath() + "/" + EXECUTABLE + " " + CONFIG, env, workingDirectory);
 			readInputStream(context, Okio.buffer(Okio.source(stunnelProcess.getErrorStream())));
 			readInputStream(context, Okio.buffer(Okio.source(stunnelProcess.getInputStream())));
-			ServiceUtils.broadcastStarted(context);
 			stunnelProcess.waitFor();
 		} catch (IOException e) {
 			Log.e(TAG, "failure", e);

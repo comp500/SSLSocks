@@ -17,8 +17,6 @@ public class ServiceUtils {
 	public static final String ACTION_LOGBROADCAST = "link.infra.sslsocks.service.action.LOGBROADCAST";
 	public static final String EXTENDED_DATA_LOG = "link.infra.sslsocks.service.action.LOGDATA";
 	public static final String ACTION_CLEARLOG = "link.infra.sslsocks.service.action.CLEARLOG";
-	public static final String ACTION_STARTED = "link.infra.sslsocks.service.action.STARTED";
-	public static final String ACTION_STOPPED = "link.infra.sslsocks.service.action.STOPPED";
 	public static final String SHOULD_CLEAR_LOG = "link.infra.sslsocks.service.action.SHOULDCLEAR";
 	private static final String ACTION_STOP = "link.infra.sslsocks.service.action.STOP";
 
@@ -88,18 +86,6 @@ public class ServiceUtils {
 						// Puts the status into the Intent
 						.putExtra(EXTENDED_DATA_LOG, ctx.pendingLog)
 						.putExtra(SHOULD_CLEAR_LOG, "");
-		// Broadcasts the Intent to receivers in this app.
-		LocalBroadcastManager.getInstance(ctx).sendBroadcast(localIntent);
-	}
-
-	static void broadcastStarted(Context ctx) {
-		Intent localIntent = new Intent(ACTION_STARTED);
-		// Broadcasts the Intent to receivers in this app.
-		LocalBroadcastManager.getInstance(ctx).sendBroadcast(localIntent);
-	}
-
-	static void broadcastStopped(Context ctx) {
-		Intent localIntent = new Intent(ACTION_STOPPED);
 		// Broadcasts the Intent to receivers in this app.
 		LocalBroadcastManager.getInstance(ctx).sendBroadcast(localIntent);
 	}

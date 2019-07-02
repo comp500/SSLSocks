@@ -32,6 +32,10 @@ android {
         signingConfigs.release.keyAlias = System.getenv("keystore_alias")
         signingConfigs.release.keyPassword = System.getenv("keystore_alias_password")
     }
+
+    dataBinding {
+        enabled = true
+    }
 }
 
 repositories {
@@ -52,4 +56,5 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     implementation 'com.squareup.okio:okio:2.3.0-SNAPSHOT'
     implementation 'androidx.preference:preference:1.1.0-beta01'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-alpha01'
 }
