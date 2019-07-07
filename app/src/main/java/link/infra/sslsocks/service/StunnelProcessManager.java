@@ -9,8 +9,11 @@ import android.util.Log;
 import java.io.File;
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import link.infra.sslsocks.BuildConfig;
+import link.infra.sslsocks.R;
 import okio.BufferedSink;
 import okio.BufferedSource;
 import okio.Okio;
@@ -151,5 +154,43 @@ public class StunnelProcessManager {
 				}
 			}
 		}
+	}
+
+	public String checkStunnelVersion(Context context) {
+		File pidFile = new File(context.getFilesDir().getPath() + "/" + PID);
+		if (stunnelProcess != null || pidFile.exists()) {
+			stop(context);
+		}
+		checkAndExtract(context);
+		try {
+			String[] env = new String[0];
+			File workingDirectory = new File(context.getFilesDir().getPath());
+			// Make the process fail, so we can extract just the version from the error stream
+			stunnelProcess = Runtime.getRuntime().exec(context.getFilesDir().getPath() + "/" + EXECUTABLE + " THISFILESHOULDNOTEXIST", env, workingDirectory);
+			BufferedSource errors = Okio.buffer(Okio.source(stunnelProcess.getErrorStream()));
+
+			Pattern versionPattern = Pattern.compile("stunnel ([\\d.]+)");
+			String line;
+			String versionString = null;
+			while ((line = errors.readUtf8Line()) != null) {
+				Matcher matcher = versionPattern.matcher(line);
+				if (matcher.find()) {
+					versionString = matcher.group(1);
+					break;
+				}
+			}
+			errors.close();
+
+			stunnelProcess.waitFor();
+			if (versionString != null) {
+				return versionString;
+			}
+		} catch (IOException e) {
+			Log.e(TAG, "failure", e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+
+		return context.getString(R.string.pref_desc_stunnel_version_failed);
 	}
 }
