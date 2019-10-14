@@ -1,9 +1,37 @@
-<androidx.preference.PreferenceScreen
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <SwitchPreferenceCompat
-        app:defaultValue="false"
-        app:key="start_on_boot"
-        app:title="@string/pref_title_start_on_boot" />
+    <PreferenceCategory
+        app:key="general_category"
+        app:title="@string/pref_header_general">
+        <SwitchPreferenceCompat
+            app:defaultValue="false"
+            app:key="start_on_boot"
+            app:title="@string/pref_title_start_on_boot" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="about_category"
+        app:title="@string/pref_header_about">
+        <Preference
+            app:key="version"
+            app:title="@string/pref_title_version" />
+        <Preference
+            app:key="stunnelVersion"
+            app:title="@string/pref_title_stunnel_version"
+            app:summary="@string/pref_desc_stunnel_version_loading"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="oss_category"
+        app:title="@string/pref_header_oss">
+        <Preference
+            app:key="licenseSSLSocks"
+            app:title="@string/app_name"
+            app:summary="@string/pref_oss_sslsocks_license"/>
+        <Preference
+            app:key="licenseStunnel"
+            app:title="@string/pref_oss_stunnel"
+            app:summary="@string/pref_oss_stunnel_license"/>
+    </PreferenceCategory>
 
 </androidx.preference.PreferenceScreen>
