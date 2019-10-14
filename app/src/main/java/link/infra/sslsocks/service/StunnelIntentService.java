@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.preference.PreferenceManager;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.TaskStackBuilder;
@@ -78,10 +79,29 @@ public class StunnelIntentService extends IntentService {
 	private void handleStart() {
 		privateIsRunning.postValue(true);
 		showNotification();
+
+		String openVpnProfile = PreferenceManager.getDefaultSharedPreferences(this).getString("openVpnProfile", "");
+		if (openVpnProfile != null && openVpnProfile.trim().length() > 0) {
+			// Start OpenVPN service
+			Intent shortcutIntent = new Intent(Intent.ACTION_MAIN);
+			shortcutIntent.setClassName("de.blinkt.openvpn", "de.blinkt.openvpn.api.ConnectVPN");
+			shortcutIntent.putExtra("de.blinkt.openvpn.api.profileName", openVpnProfile);
+			startActivity(shortcutIntent);
+		}
+
 		processManager.start(this);
 	}
 
 	public void onDestroy() {
+		String openVpnProfile = PreferenceManager.getDefaultSharedPreferences(this).getString("openVpnProfile", "");
+		if (openVpnProfile != null && openVpnProfile.trim().length() > 0) {
+			// Stop OpenVPN service
+			Intent shortcutIntent = new Intent(Intent.ACTION_MAIN);
+			shortcutIntent.setClassName("de.blinkt.openvpn", "de.blinkt.openvpn.api.DisconnectVPN");
+			shortcutIntent.putExtra("de.blinkt.openvpn.api.profileName", openVpnProfile);
+			startActivity(shortcutIntent);
+		}
+
 		processManager.stop(this);
 		removeNotification();
 		privateIsRunning.postValue(false);
