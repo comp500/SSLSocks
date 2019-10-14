@@ -16,6 +16,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.preference.PreferenceManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -25,6 +26,7 @@ import java.lang.ref.WeakReference;
 
 import link.infra.sslsocks.R;
 import link.infra.sslsocks.gui.AdvancedSettingsActivity;
+import link.infra.sslsocks.gui.OpenVPNIntegrationHandler;
 import link.infra.sslsocks.gui.keymgmt.KeyEditActivity;
 import link.infra.sslsocks.gui.keymgmt.KeyFragment;
 import link.infra.sslsocks.gui.keymgmt.KeyRecyclerViewAdapter;
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements KeyFragment.OnLis
 	public static final String CHANNEL_ID = "NOTIFY_CHANNEL_1";
 	private WeakReference<KeyFragment> keysFragment;
 	private static final int KEY_EDIT_REQUEST = 1;
+	private OpenVPNIntegrationHandler openVPNIntegrationHandler = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -137,11 +140,22 @@ public class MainActivity extends AppCompatActivity implements KeyFragment.OnLis
 						@Override
 						public void onFragmentStartInteraction() {
 							StunnelIntentService.start(getApplicationContext());
+							String openVpnProfile = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("open_vpn_profile", "");
+							if (openVpnProfile != null && openVpnProfile.trim().length() > 0) {
+								openVPNIntegrationHandler = new OpenVPNIntegrationHandler(MainActivity.this, new Runnable() {
+									@Override
+									public void run() {}
+								}, openVpnProfile, false);
+								openVPNIntegrationHandler.bind();
+							}
 						}
 
 						@Override
 						public void onFragmentStopInteraction() {
 							stopStunnelService();
+							if (openVPNIntegrationHandler != null) {
+								openVPNIntegrationHandler.disconnect();
+							}
 						}
 					});
 					StunnelIntentService.checkStatus(MainActivity.this);
@@ -224,6 +238,14 @@ public class MainActivity extends AppCompatActivity implements KeyFragment.OnLis
 					}
 				}
 			}
+		} else if (requestCode == OpenVPNIntegrationHandler.PERMISSION_REQUEST) {
+			if (resultCode == RESULT_OK && openVPNIntegrationHandler != null) {
+				openVPNIntegrationHandler.doVpnPermissionRequest();
+			}
+		} else if (requestCode == OpenVPNIntegrationHandler.VPN_PERMISSION_REQUEST) {
+			if (resultCode == RESULT_OK && openVPNIntegrationHandler != null) {
+				openVPNIntegrationHandler.connectProfile();
+			}
 		}
 	}
 
@@ -231,5 +253,13 @@ public class MainActivity extends AppCompatActivity implements KeyFragment.OnLis
 	protected void onResume() {
 		super.onResume();
 		StunnelIntentService.checkStatus(this);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if (openVPNIntegrationHandler != null) {
+			openVPNIntegrationHandler.unbind();
+		}
 	}
 }

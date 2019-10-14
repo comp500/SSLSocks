@@ -7,6 +7,10 @@
             app:defaultValue="false"
             app:key="start_on_boot"
             app:title="@string/pref_title_start_on_boot" />
+        <EditTextPreference
+            app:key="open_vpn_profile"
+            app:title="@string/pref_title_open_vpn_profile"
+            app:summary="@string/pref_desc_open_vpn_profile"/>
     </PreferenceCategory>
 
     <PreferenceCategory

@@ -48,6 +48,7 @@
         <service
             android:name=".service.StunnelIntentService"
             android:exported="false" />
+        <service android:name=".service.ServiceStopReceiver$OpenVPNIntentService" />
 
         <receiver
             android:name=".service.BootReceiver"
