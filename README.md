@@ -1,6 +1,8 @@
 # SSLSocks
 ✨ See [this article](https://hamy.io/post/0011/how-to-run-stunnel-on-your-android-device/) by Hamy for an excellent introduction to the app!
 
+**Now released as a beta on Google Play!** https://play.google.com/store/apps/details?id=link.infra.sslsocks
+
 SSL/TLS tunnel using [stunnel](https://www.stunnel.org/) for Android.
 
 *Note:* Originally intended to be a socks5 VPN through TLS, but I never finished implementing the VPN service.
