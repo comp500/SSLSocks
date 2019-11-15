@@ -140,7 +140,7 @@ public class StunnelProcessManager {
 			}
 
 			if (pid == null || !pid.trim().equals("")) {
-				Log.d(TAG, "Attmepting to kill stunnel, pid = " + pid);
+				Log.d(TAG, "Attempting to kill stunnel, pid = " + pid);
 				try {
 					Runtime.getRuntime().exec("kill " + pid).waitFor();
 				} catch (Exception e) {
