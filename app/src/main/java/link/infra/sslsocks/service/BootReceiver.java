@@ -3,7 +3,8 @@ package link.infra.sslsocks.service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.preference.PreferenceManager;
+
+import androidx.preference.PreferenceManager;
 
 public class BootReceiver extends BroadcastReceiver {
 	@Override
