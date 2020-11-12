@@ -5,8 +5,7 @@
     android:name="link.infra.sslsocks.gui.keymgmt.KeyFragment"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <!--suppress AndroidDomInspection -->
-    <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <androidx.recyclerview.widget.RecyclerView xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/list"
         android:layout_width="match_parent"

@@ -14,7 +14,7 @@ public class ServiceStopReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		String openVpnProfile = PreferenceManager.getDefaultSharedPreferences(context).getString("open_vpn_profile", "");
-		if (openVpnProfile != null && openVpnProfile.trim().length() > 0) {
+		if (openVpnProfile.trim().length() > 0) {
 			Intent intentDisconnect = new Intent(context, OpenVPNIntentService.class);
 			context.startService(intentDisconnect);
 		}
@@ -31,12 +31,7 @@ public class ServiceStopReceiver extends BroadcastReceiver {
 		}
 		@Override
 		protected void onHandleIntent(@Nullable Intent intent) {
-			handler = new OpenVPNIntegrationHandler(this, new Runnable() {
-				@Override
-				public void run() {
-					handler.unbind();
-				}
-			}, "", true);
+			handler = new OpenVPNIntegrationHandler(this, () -> handler.unbind(), "", true);
 			handler.bind();
 		}
 	}

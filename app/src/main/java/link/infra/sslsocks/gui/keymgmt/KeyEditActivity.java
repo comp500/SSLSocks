@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -27,8 +29,6 @@ import okio.BufferedSource;
 import okio.Okio;
 
 public class KeyEditActivity extends AppCompatActivity {
-
-	private final int IMPORT_FILE = 2;
 	private EditText fileContents;
 	private EditText fileName;
 	private String existingFileName;
@@ -36,6 +36,37 @@ public class KeyEditActivity extends AppCompatActivity {
 
 	private static final String TAG = KeyEditActivity.class.getSimpleName();
 	private boolean showDelete = true;
+
+	private final ActivityResultLauncher<Intent> importFileRequestLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+		if (result.getResultCode() == RESULT_OK) {
+			Intent resultData = result.getData();
+			if (resultData != null) {
+				Uri fileData = resultData.getData();
+				if (fileData != null) {
+					InputStream inputStream;
+					try {
+						// TODO: this doesn't seem to work on Android 4.4.x, for some reason
+						inputStream = getContentResolver().openInputStream(fileData);
+						if (inputStream == null) { // Just to keep the linter happy that I'm doing null checks
+							throw new FileNotFoundException();
+						}
+					} catch (FileNotFoundException e) {
+						Log.e(TAG, "Failed to read imported file", e);
+						Toast.makeText(this, R.string.file_read_fail, Toast.LENGTH_SHORT).show();
+						return;
+					}
+					try (BufferedSource in = Okio.buffer(Okio.source(inputStream))) {
+						fileContents.setText(in.readUtf8());
+					} catch (IOException e) {
+						Log.e(TAG, "Failed to read imported file", e);
+						Toast.makeText(this, R.string.file_read_fail, Toast.LENGTH_SHORT).show();
+						return;
+					}
+					fileName.setText(getFileName(fileData));
+				}
+			}
+		}
+	});
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -65,12 +96,7 @@ public class KeyEditActivity extends AppCompatActivity {
 
 		// Add event listeners in code, because onClick doesn't work on 4.4.x for some reason
 		// https://stackoverflow.com/a/54060752/816185
-		findViewById(R.id.import_button).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				importExternalFile();
-			}
-		});
+		findViewById(R.id.import_button).setOnClickListener(view -> importExternalFile());
 	}
 
 	@Override
@@ -111,8 +137,7 @@ public class KeyEditActivity extends AppCompatActivity {
 		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 		intent.setType("*/*");
 		intent.addCategory(Intent.CATEGORY_OPENABLE);
-		Intent chooserIntent = Intent.createChooser(intent, getString(R.string.title_activity_config_editor));
-		startActivityForResult(chooserIntent, IMPORT_FILE);
+		importFileRequestLauncher.launch(Intent.createChooser(intent, getString(R.string.title_activity_config_editor)));
 	}
 
 	// Get the file name for importing a file from a Uri
@@ -133,38 +158,6 @@ public class KeyEditActivity extends AppCompatActivity {
 			}
 		}
 		return result;
-	}
-
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-
-		if (requestCode == IMPORT_FILE) {
-			if (resultCode == RESULT_OK) {
-				Uri fileData = data.getData();
-				if (fileData != null) {
-					InputStream inputStream;
-					try {
-						// TODO: this doesn't seem to work on Android 4.4.x, for some reason
-						inputStream = getContentResolver().openInputStream(fileData);
-						if (inputStream == null) { // Just to keep the linter happy that I'm doing null checks
-							throw new FileNotFoundException();
-						}
-					} catch (FileNotFoundException e) {
-						Log.e(TAG, "Failed to read imported file", e);
-						Toast.makeText(this, R.string.file_read_fail, Toast.LENGTH_SHORT).show();
-						return;
-					}
-					try (BufferedSource in = Okio.buffer(Okio.source(inputStream))) {
-						fileContents.setText(in.readUtf8());
-					} catch (IOException e) {
-						Log.e(TAG, "Failed to read imported file", e);
-						Toast.makeText(this, R.string.file_read_fail, Toast.LENGTH_SHORT).show();
-						return;
-					}
-					fileName.setText(getFileName(fileData));
-				}
-			}
-		}
 	}
 
 	private void saveFile() {

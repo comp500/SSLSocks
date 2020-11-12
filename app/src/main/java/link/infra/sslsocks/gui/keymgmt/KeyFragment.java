@@ -7,15 +7,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import link.infra.sslsocks.R;
 
 /**
@@ -90,7 +91,7 @@ public class KeyFragment extends Fragment {
 	public void updateList(Context context) {
 		items.clear();
 		File folder = context.getFilesDir();
-		for (final File fileEntry : folder.listFiles()) {
+		for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
 			if (fileEntry.getPath().endsWith(".p12") || fileEntry.getPath().endsWith(".pem")) { // Only show .p12 or .pem files
 				items.add(new KeyRecyclerViewAdapter.KeyItem(fileEntry.getName()));
 			}

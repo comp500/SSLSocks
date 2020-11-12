@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -24,8 +23,8 @@ import link.infra.sslsocks.service.StunnelProcessManager;
 
 public class AdvancedSettingsActivity extends AppCompatActivity {
 
-	private MutableLiveData<String> stunnelVersionStringMutable = new MutableLiveData<>();
-	private LiveData<String> stunnelVersionString = stunnelVersionStringMutable;
+	private final MutableLiveData<String> stunnelVersionStringMutable = new MutableLiveData<>();
+	private final LiveData<String> stunnelVersionString = stunnelVersionStringMutable;
 	private Thread checkVersionThread = null;
 
 	@Override
@@ -37,12 +36,7 @@ public class AdvancedSettingsActivity extends AppCompatActivity {
 
 		Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
-		checkVersionThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				stunnelVersionStringMutable.postValue(new StunnelProcessManager().checkStunnelVersion(AdvancedSettingsActivity.this));
-			}
-		});
+		checkVersionThread = new Thread(() -> stunnelVersionStringMutable.postValue(new StunnelProcessManager().checkStunnelVersion(AdvancedSettingsActivity.this)));
 		checkVersionThread.start();
 	}
 
@@ -54,12 +48,7 @@ public class AdvancedSettingsActivity extends AppCompatActivity {
 			Preference appVersionPreference = findPreference("version");
 			if (appVersionPreference != null) {
 				final String versionString = BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")";
-				appVersionPreference.setSummaryProvider(new Preference.SummaryProvider<Preference>() {
-					@Override
-					public CharSequence provideSummary(Preference preference) {
-						return versionString;
-					}
-				});
+				appVersionPreference.setSummaryProvider((Preference.SummaryProvider<Preference>) preference -> versionString);
 			}
 		}
 
@@ -68,12 +57,7 @@ public class AdvancedSettingsActivity extends AppCompatActivity {
 			final Preference stunnelVersionPreference = findPreference("stunnelVersion");
 			final AdvancedSettingsActivity asa = (AdvancedSettingsActivity) getActivity();
 			if (stunnelVersionPreference != null && asa != null) {
-				asa.stunnelVersionString.observe(getViewLifecycleOwner(), new Observer<String>() {
-					@Override
-					public void onChanged(String s) {
-						stunnelVersionPreference.setSummary(s);
-					}
-				});
+				asa.stunnelVersionString.observe(getViewLifecycleOwner(), stunnelVersionPreference::setSummary);
 			}
 
 			return super.onCreateView(inflater, container, savedInstanceState);

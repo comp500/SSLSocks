@@ -20,13 +20,8 @@ public class ServiceStopActivity extends Activity {
 
 		StunnelIntentService.start(this);
 		String openVpnProfile = PreferenceManager.getDefaultSharedPreferences(this).getString("open_vpn_profile", "");
-		if (openVpnProfile != null && openVpnProfile.trim().length() > 0) {
-			openVPNIntegrationHandler = new OpenVPNIntegrationHandler(this, new Runnable() {
-				@Override
-				public void run() {
-					ServiceStopActivity.this.finish();
-				}
-			}, openVpnProfile, true);
+		if (openVpnProfile.trim().length() > 0) {
+			openVPNIntegrationHandler = new OpenVPNIntegrationHandler(this, ServiceStopActivity.this::finish, openVpnProfile, true);
 			openVPNIntegrationHandler.bind();
 		}
 		Intent intentStop = new Intent(this, StunnelIntentService.class);

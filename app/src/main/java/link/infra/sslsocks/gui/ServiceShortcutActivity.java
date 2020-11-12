@@ -17,13 +17,8 @@ public class ServiceShortcutActivity extends Activity {
 
 		StunnelIntentService.start(this);
 		String openVpnProfile = PreferenceManager.getDefaultSharedPreferences(this).getString("open_vpn_profile", "");
-		if (openVpnProfile != null && openVpnProfile.trim().length() > 0) {
-			openVPNIntegrationHandler = new OpenVPNIntegrationHandler(this, new Runnable() {
-				@Override
-				public void run() {
-					ServiceShortcutActivity.this.finish();
-				}
-			}, openVpnProfile, false);
+		if (openVpnProfile.trim().length() > 0) {
+			openVPNIntegrationHandler = new OpenVPNIntegrationHandler(this, ServiceShortcutActivity.this::finish, openVpnProfile, false);
 			openVPNIntegrationHandler.bind();
 		}
 		if (openVPNIntegrationHandler == null) {

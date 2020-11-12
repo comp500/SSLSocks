@@ -11,9 +11,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Observer;
-
-import java.util.Objects;
 
 import link.infra.sslsocks.R;
 import link.infra.sslsocks.service.StunnelIntentService;
@@ -36,23 +33,20 @@ public class StartFragment extends Fragment {
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		final SwitchCompat startSwitch = Objects.requireNonNull(getView()).findViewById(R.id.start_switch);
+		final SwitchCompat startSwitch = requireView().findViewById(R.id.start_switch);
 		startSwitch.setEnabled(true);
 		startSwitch.setText(R.string.run_status_not_running);
 
-		final CompoundButton.OnCheckedChangeListener changeListener = new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-				if (isChecked) {
-					if (mListener != null) {
-						startSwitch.setText(R.string.run_status_starting);
-						mListener.onFragmentStartInteraction();
-					}
-				} else {
-					if (mListener != null) {
-						startSwitch.setText(R.string.run_status_stopping);
-						mListener.onFragmentStopInteraction();
-					}
+		final CompoundButton.OnCheckedChangeListener changeListener = (compoundButton, isChecked) -> {
+			if (isChecked) {
+				if (mListener != null) {
+					startSwitch.setText(R.string.run_status_starting);
+					mListener.onFragmentStartInteraction();
+				}
+			} else {
+				if (mListener != null) {
+					startSwitch.setText(R.string.run_status_stopping);
+					mListener.onFragmentStopInteraction();
 				}
 			}
 		};
@@ -62,20 +56,17 @@ public class StartFragment extends Fragment {
 		if (act == null) {
 			return;
 		}
-		StunnelIntentService.isRunning.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-			@Override
-			public void onChanged(Boolean aBoolean) {
-				if (aBoolean) {
-					startSwitch.setText(R.string.run_status_running);
-					startSwitch.setOnCheckedChangeListener(null);
-					startSwitch.setChecked(true);
-					startSwitch.setOnCheckedChangeListener(changeListener);
-				} else {
-					startSwitch.setText(R.string.run_status_not_running);
-					startSwitch.setOnCheckedChangeListener(null);
-					startSwitch.setChecked(false);
-					startSwitch.setOnCheckedChangeListener(changeListener);
-				}
+		StunnelIntentService.isRunning.observe(getViewLifecycleOwner(), aBoolean -> {
+			if (aBoolean) {
+				startSwitch.setText(R.string.run_status_running);
+				startSwitch.setOnCheckedChangeListener(null);
+				startSwitch.setChecked(true);
+				startSwitch.setOnCheckedChangeListener(changeListener);
+			} else {
+				startSwitch.setText(R.string.run_status_not_running);
+				startSwitch.setOnCheckedChangeListener(null);
+				startSwitch.setChecked(false);
+				startSwitch.setOnCheckedChangeListener(changeListener);
 			}
 		});
 	}

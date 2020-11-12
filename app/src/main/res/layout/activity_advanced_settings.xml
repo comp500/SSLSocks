@@ -19,7 +19,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment"
         android:name="link.infra.sslsocks.gui.AdvancedSettingsActivity$AdvancedSettingsActivityFragment"
         android:layout_width="match_parent"

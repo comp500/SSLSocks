@@ -4,6 +4,7 @@
 
     <!-- Actions -->
     <string name="action_settings">Settings</string>
+    <string name="add_fab">Add</string>
 
     <!-- Service notification -->
     <string name="notification_desc">Tunnel running</string>

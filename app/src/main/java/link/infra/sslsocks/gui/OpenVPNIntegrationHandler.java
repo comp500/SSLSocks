@@ -22,14 +22,14 @@ public class OpenVPNIntegrationHandler {
 	public static final int VPN_PERMISSION_REQUEST = 101;
 
 	private static final String TAG = OpenVPNIntegrationHandler.class.getSimpleName();
-	private WeakReference<Context> ctxRef;
+	private final WeakReference<Context> ctxRef;
 	private boolean isActivity = true;
 	private final Runnable doneCallback;
 	private final String profileName;
 	private final boolean shouldDisconnect;
 
 	public OpenVPNIntegrationHandler(Activity ctx, Runnable doneCallback, String profile, boolean shouldDisconnect) {
-		this.ctxRef = new WeakReference<Context>(ctx);
+		this.ctxRef = new WeakReference<>(ctx);
 		this.doneCallback = doneCallback;
 		this.profileName = profile;
 		this.shouldDisconnect = shouldDisconnect;

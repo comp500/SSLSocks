@@ -5,10 +5,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.List;
+
 import link.infra.sslsocks.R;
 
 public class KeyRecyclerViewAdapter extends RecyclerView.Adapter<KeyRecyclerViewAdapter.ViewHolder> {
@@ -41,14 +42,11 @@ public class KeyRecyclerViewAdapter extends RecyclerView.Adapter<KeyRecyclerView
 		holder.mItem = mValues.get(position);
 		holder.mFileNameView.setText(mValues.get(position).filename);
 
-		holder.mView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (null != mListener) {
-					// Notify the active callbacks interface (the activity, if the
-					// fragment is attached to one) that an item has been selected.
-					mListener.onListFragmentInteraction(holder.mItem);
-				}
+		holder.mView.setOnClickListener(v -> {
+			if (null != mListener) {
+				// Notify the active callbacks interface (the activity, if the
+				// fragment is attached to one) that an item has been selected.
+				mListener.onListFragmentInteraction(holder.mItem);
 			}
 		});
 	}
@@ -58,7 +56,7 @@ public class KeyRecyclerViewAdapter extends RecyclerView.Adapter<KeyRecyclerView
 		return mValues.size();
 	}
 
-	class ViewHolder extends RecyclerView.ViewHolder {
+	static class ViewHolder extends RecyclerView.ViewHolder {
 		final View mView;
 		final TextView mFileNameView;
 		KeyItem mItem;

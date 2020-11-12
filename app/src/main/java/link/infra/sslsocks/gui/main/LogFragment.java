@@ -10,7 +10,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 
 import link.infra.sslsocks.R;
 import link.infra.sslsocks.service.StunnelIntentService;
@@ -52,12 +51,7 @@ public class LogFragment extends Fragment {
 			return;
 		}
 
-		StunnelIntentService.logData.observe(getViewLifecycleOwner(), new Observer<String>() {
-			@Override
-			public void onChanged(String s) {
-				logText.setText(s);
-			}
-		});
+		StunnelIntentService.logData.observe(getViewLifecycleOwner(), logText::setText);
 	}
 
 }
