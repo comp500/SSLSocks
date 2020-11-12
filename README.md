@@ -9,7 +9,7 @@ SSL/TLS tunnel using [stunnel](https://www.stunnel.org/) for Android.
 
 ## Build instructions
 1. Install Android Studio
-1. Download the stunnel android binary from [stunnel.org](https://www.stunnel.org/index.html), and copy it to /app/src/main/assets/stunnel
+1. Download the stunnel android binary from [stunnel.org](https://www.stunnel.org/index.html), and copy it to /app/src/main/assets/stunnel. Also copy your openssl.cnf file to /app/src/main/assets/openssl.cnf
 1. Build it using Android Studio
 
 ## How to use
