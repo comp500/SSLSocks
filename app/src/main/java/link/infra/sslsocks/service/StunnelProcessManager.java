@@ -62,10 +62,32 @@ public class StunnelProcessManager {
 			}
 		}
 
+		try {
+			String[] list = am.list("");
+			for (String elem : list) {
+				if (elem.contains(".so")) {
+					File libFile = new File(context.getFilesDir().getPath() + "/" + elem);
+					if (!libFile.exists()) {
+						try (BufferedSource in = Okio.buffer(Okio.source(am.open(elem)));
+							 BufferedSink out = Okio.buffer(Okio.sink(libFile))) {
+							out.writeAll(in);
+
+							Log.d(TAG, "Extracted " + elem + " file successfully");
+						} catch (Exception e) {
+							Log.e(TAG, "Failed " + elem + " extraction: ", e);
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "Failed export additional libraries extraction: ", e);
+		}
+
+
 		File opensslConfFile = new File(context.getFilesDir().getPath() + "/" + OPENSSL_CONF);
 		if (!opensslConfFile.exists()) {
 			try (BufferedSource in = Okio.buffer(Okio.source(am.open(OPENSSL_CONF)));
-				 BufferedSink out = Okio.buffer(Okio.sink(execFile))) {
+				 BufferedSink out = Okio.buffer(Okio.sink(opensslConfFile))) {
 				out.writeAll(in);
 
 				Log.d(TAG, "Extracted openssl.conf file successfully");
@@ -105,9 +127,16 @@ public class StunnelProcessManager {
 		setupConfig(context);
 		context.clearLog();
 		try {
-			String[] env = new String[1];
+			String[] env;
 			File workingDirectory = new File(context.getFilesDir().getPath());
-			env[0]="OPENSSL_CONF=" + workingDirectory + "/" + OPENSSL_CONF;
+			if (new File(context.getFilesDir().getPath() + "/" + OPENSSL_CONF).exists()) {
+				env = new String[2];
+				env[1] = "OPENSSL_CONF=" + context.getFilesDir().getPath() + "/" + OPENSSL_CONF;
+			} else {
+				env = new String[1];
+			}
+			env[0] = "LD_LIBRARY_PATH=" + context.getFilesDir().getPath();
+
 
 			stunnelProcess = Runtime.getRuntime().exec(context.getFilesDir().getPath() + "/" + EXECUTABLE + " " + CONFIG, env, workingDirectory);
 			readInputStream(context, Okio.buffer(Okio.source(stunnelProcess.getErrorStream())));
