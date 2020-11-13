@@ -91,7 +91,7 @@ public class KeyFragment extends Fragment {
 		items.clear();
 		File folder = context.getFilesDir();
 		for (final File fileEntry : folder.listFiles()) {
-			if (fileEntry.getPath().endsWith(".p12") || fileEntry.getPath().endsWith(".pem")) { // Only show .p12 or .pem files
+			if (fileEntry.getPath().endsWith(".p12") || fileEntry.getPath().endsWith(".pem") || fileEntry.getPath().contains(".so")) { // Only show .p12 or .pem and .so files
 				items.add(new KeyRecyclerViewAdapter.KeyItem(fileEntry.getName()));
 			}
 		}

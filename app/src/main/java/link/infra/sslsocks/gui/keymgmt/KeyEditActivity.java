@@ -173,8 +173,8 @@ public class KeyEditActivity extends AppCompatActivity {
 			Toast.makeText(this, R.string.file_name_required, Toast.LENGTH_SHORT).show();
 			return;
 		}
-		if (!fileNameString.endsWith(".pem") && !fileNameString.endsWith(".p12")) {
-			Toast.makeText(this, R.string.file_name_ext, Toast.LENGTH_SHORT).show();
+		if (!fileNameString.endsWith(".pem") && !fileNameString.endsWith(".p12") && !fileNameString.contains(".so")) {
+			Toast.makeText(this,  R.string.file_name_ext, Toast.LENGTH_SHORT).show();
 			return;
 		}
 		if (fileNameString.contains("/")) {
@@ -193,6 +193,7 @@ public class KeyEditActivity extends AppCompatActivity {
 				//noinspection ResultOfMethodCallIgnored
 				existingFile.delete();
 			}
+
 			setResult(RESULT_OK);
 			finish();
 		} catch (IOException e) {
