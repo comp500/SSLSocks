@@ -22,6 +22,7 @@ import static link.infra.sslsocks.Constants.CONFIG;
 import static link.infra.sslsocks.Constants.DEF_CONFIG;
 import static link.infra.sslsocks.Constants.EXECUTABLE;
 import static link.infra.sslsocks.Constants.PID;
+import static link.infra.sslsocks.Constants.OPENSSL_CONF;
 
 public class StunnelProcessManager {
 
@@ -40,26 +41,59 @@ public class StunnelProcessManager {
 	}
 
 	public static void checkAndExtract(Context context) {
-		File execFile = new File(context.getFilesDir().getPath() + "/" + EXECUTABLE);
-		if (execFile.exists() && !hasBeenUpdated(context)) {
-			return; // already extracted
-		}
+		AssetManager am = context.getAssets();
 
+		File execFile = new File(context.getFilesDir().getPath() + "/" + EXECUTABLE);
 		//noinspection ResultOfMethodCallIgnored
 		execFile.getParentFile().mkdir();
 
-		// Extract stunnel exectuable
-		AssetManager am = context.getAssets();
-		try (BufferedSource in = Okio.buffer(Okio.source(am.open(EXECUTABLE)));
-		     BufferedSink out = Okio.buffer(Okio.sink(execFile))) {
-			out.writeAll(in);
+		if (!execFile.exists() || hasBeenUpdated(context)) {
+			// Extract stunnel exectuable
+			try (BufferedSource in = Okio.buffer(Okio.source(am.open(EXECUTABLE)));
+				 BufferedSink out = Okio.buffer(Okio.sink(execFile))) {
+				out.writeAll(in);
 
-			//noinspection ResultOfMethodCallIgnored
-			execFile.setExecutable(true);
+				//noinspection ResultOfMethodCallIgnored
+				execFile.setExecutable(true);
 
-			Log.d(TAG, "Extracted stunnel binary successfully");
+				Log.d(TAG, "Extracted stunnel binary successfully");
+			} catch (Exception e) {
+				Log.e(TAG, "Failed stunnel extraction: ", e);
+			}
+		}
+
+		try {
+			String[] list = am.list("");
+			for (String elem : list) {
+				if (elem.contains(".so")) {
+					File libFile = new File(context.getFilesDir().getPath() + "/" + elem);
+					if (!libFile.exists()) {
+						try (BufferedSource in = Okio.buffer(Okio.source(am.open(elem)));
+							 BufferedSink out = Okio.buffer(Okio.sink(libFile))) {
+							out.writeAll(in);
+
+							Log.d(TAG, "Extracted " + elem + " file successfully");
+						} catch (Exception e) {
+							Log.e(TAG, "Failed " + elem + " extraction: ", e);
+						}
+					}
+				}
+			}
 		} catch (Exception e) {
-			Log.e(TAG, "Failed stunnel extraction: ", e);
+			Log.e(TAG, "Failed export additional libraries extraction: ", e);
+		}
+
+
+		File opensslConfFile = new File(context.getFilesDir().getPath() + "/" + OPENSSL_CONF);
+		if (!opensslConfFile.exists()) {
+			try (BufferedSource in = Okio.buffer(Okio.source(am.open(OPENSSL_CONF)));
+				 BufferedSink out = Okio.buffer(Okio.sink(opensslConfFile))) {
+				out.writeAll(in);
+
+				Log.d(TAG, "Extracted openssl.conf file successfully");
+			} catch (Exception e) {
+				Log.e(TAG, "Failed openssl.conf extraction: ", e);
+			}
 		}
 	}
 
@@ -93,8 +127,17 @@ public class StunnelProcessManager {
 		setupConfig(context);
 		context.clearLog();
 		try {
-			String[] env = new String[0];
+			String[] env;
 			File workingDirectory = new File(context.getFilesDir().getPath());
+			if (new File(context.getFilesDir().getPath() + "/" + OPENSSL_CONF).exists()) {
+				env = new String[2];
+				env[1] = "OPENSSL_CONF=" + context.getFilesDir().getPath() + "/" + OPENSSL_CONF;
+			} else {
+				env = new String[1];
+			}
+			env[0] = "LD_LIBRARY_PATH=" + context.getFilesDir().getPath();
+
+
 			stunnelProcess = Runtime.getRuntime().exec(context.getFilesDir().getPath() + "/" + EXECUTABLE + " " + CONFIG, env, workingDirectory);
 			readInputStream(context, Okio.buffer(Okio.source(stunnelProcess.getErrorStream())));
 			readInputStream(context, Okio.buffer(Okio.source(stunnelProcess.getInputStream())));

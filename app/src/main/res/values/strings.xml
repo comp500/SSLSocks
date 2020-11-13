@@ -13,7 +13,7 @@
         <item>HOME</item>
         <item>LOG</item>
         <item>CONFIG</item>
-        <item>CERTS/KEYS</item>
+        <item>CERTS/KEYS/ENGINES</item>.255
         <!--<item>PROFILES</item>
         <item>SETTINGS</item>-->
     </string-array>
@@ -33,6 +33,7 @@
     <string name="config_editor_saved">Config saved!</string>
     <string-array name="files_array">
         <item>stunnel.conf</item>
+        <item>openssl.cnf</item>
         <item>psksecrets.txt</item>
     </string-array>
     <string name="config_editor_hint">Type file contents…</string>
@@ -48,10 +49,11 @@
     <string name="file_delete_err">Internal file deletion error</string>
     <string name="file_delete_nexist">File does not exist</string>
     <string name="file_name_required">File name is required</string>
-    <string name="file_name_ext">File name must end with .pem or .p12</string>
+    <string name="file_name_ext">File name must end with .pem or .p12 or .so</string>
     <string name="file_name_slashes">File name must not contain forward slashes</string>
     <string name="file_write_fail">Failed to write file</string>
     <string name="file_read_fail">Failed to read file</string>
+    <string name="some_shared_library">Some shared library</string>
     <string name="file_save">Save</string>
     <string name="file_delete">Delete</string>
 

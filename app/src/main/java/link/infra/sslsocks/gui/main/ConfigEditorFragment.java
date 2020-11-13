@@ -26,6 +26,7 @@ import okio.BufferedSource;
 import okio.Okio;
 
 import static link.infra.sslsocks.Constants.CONFIG;
+import static link.infra.sslsocks.Constants.OPENSSL_CONF;
 import static link.infra.sslsocks.Constants.PSKSECRETS;
 
 /**
@@ -148,8 +149,12 @@ public class ConfigEditorFragment extends Fragment implements AdapterView.OnItem
 					selectedFile = CONFIG;
 					break;
 				case 1:
+					selectedFile = OPENSSL_CONF;
+					break;
+				case 2:
 					selectedFile = PSKSECRETS;
 					break;
+
 				default:
 					selectedFile = CONFIG;
 			}

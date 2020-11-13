@@ -78,6 +78,7 @@ fabric.properties
 .externalNativeBuild
 
 /app/src/main/assets/stunnel
+/app/src/main/assets/openssl.cnf
 /.idea/caches
 /meta/
 /.idea/assetWizardSettings.xml
