@@ -53,6 +53,7 @@
     <string name="file_name_slashes">File name must not contain forward slashes</string>
     <string name="file_write_fail">Failed to write file</string>
     <string name="file_read_fail">Failed to read file</string>
+    <string name="some_shared_library">Some shared library</string>
     <string name="file_save">Save</string>
     <string name="file_delete">Delete</string>
 

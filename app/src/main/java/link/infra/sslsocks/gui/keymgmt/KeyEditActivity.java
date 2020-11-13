@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -26,10 +27,13 @@ import okio.BufferedSink;
 import okio.BufferedSource;
 import okio.Okio;
 
+import static link.infra.sslsocks.Constants.EXECUTABLE;
+
 public class KeyEditActivity extends AppCompatActivity {
 
 	private final int IMPORT_FILE = 2;
 	private EditText fileContents;
+	private byte[] sharedContent;
 	private EditText fileName;
 	private String existingFileName;
 	public static final String ARG_EXISTING_FILE_NAME = "EXISTING_FILE_NAME";
@@ -155,7 +159,12 @@ public class KeyEditActivity extends AppCompatActivity {
 						return;
 					}
 					try (BufferedSource in = Okio.buffer(Okio.source(inputStream))) {
-						fileContents.setText(in.readUtf8());
+						if (getFileName(fileData).contains(".so")) {
+							sharedContent = in.readByteArray();
+							fileContents.setText(R.string.some_shared_library);
+						} else {
+							fileContents.setText(in.readUtf8());
+						}
 					} catch (IOException e) {
 						Log.e(TAG, "Failed to read imported file", e);
 						Toast.makeText(this, R.string.file_read_fail, Toast.LENGTH_SHORT).show();
@@ -183,9 +192,13 @@ public class KeyEditActivity extends AppCompatActivity {
 		}
 
 		File file = new File(getFilesDir().getPath() + "/" + fileNameString);
-		try (BufferedSink out = Okio.buffer(Okio.sink(file))) {
-			String pendingContent = fileContents.getText().toString();
-			out.writeUtf8(pendingContent);
+		try (BufferedSink out = Okio.buffer(Okio.sink(file))){
+			if (sharedContent != null) {
+				out.write(sharedContent);
+			} else {
+				String pendingContent = fileContents.getText().toString();
+				out.writeUtf8(pendingContent);
+			}
 			out.close();
 			// If renamed, delete old file
 			if (existingFileName != null && existingFileName.length() > 0 && !existingFileName.equals(fileNameString)) {
@@ -224,7 +237,12 @@ public class KeyEditActivity extends AppCompatActivity {
 	private void openFile() {
 		File file = new File(getFilesDir().getPath() + "/" + existingFileName);
 		try (BufferedSource in = Okio.buffer(Okio.source(file))) {
-			fileContents.setText(in.readUtf8());
+			if (existingFileName.contains(".so")) {
+				fileContents.setText(R.string.some_shared_library);
+				sharedContent = in.readByteArray();
+			} else {
+				fileContents.setText(in.readUtf8());
+			}
 		} catch (IOException e) {
 			Log.e(TAG, "Failed to read key file", e);
 			Toast.makeText(this, R.string.file_read_fail, Toast.LENGTH_SHORT).show();
