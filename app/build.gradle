@@ -1,15 +1,23 @@
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
+import java.nio.charset.StandardCharsets
+
 apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 29
     defaultConfig {
         applicationId "link.infra.sslsocks"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 20
         versionName "0.0.20-beta"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a"
+        }
     }
     def isRunningOnTravis = System.getenv("CI") == "true"
     if (isRunningOnTravis) {
@@ -47,7 +55,7 @@ repositories {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.appcompat:appcompat:1.3.0-alpha02'
     implementation 'com.google.android.material:material:1.3.0-alpha03'
@@ -57,4 +65,87 @@ dependencies {
     implementation 'com.squareup.okio:okio:2.8.0'
     implementation 'androidx.preference:preference:1.1.1'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+}
+
+afterEvaluate {
+    android.applicationVariants.all { variant ->
+        variant.javaCompileProvider.get().dependsOn(setup)
+    }
+}
+
+// Setup for the supported native architecture & ABIs
+task setup() {
+    doLast {
+        def version = 1
+        setFilesInjniLibs("aarch64", "stunnel_deps_arm64.zip", version)
+        setFilesInjniLibs("arm",     "stunnel_deps_arm64.zip", version)
+    }
+}
+
+// Place all the Erlang runtime files in the jniLibs/<abi> subdirectory
+// and rename them into lib___.so which is the naming convention expected
+// by Android for libraries.
+// The mappings between the renamed lib___.so files and their original
+// filenames are stored in a file called libmappings.so
+def setFilesInjniLibs(String arch, String zipFileName, int version) {
+    def zipFile = new File(project.getRootDir().getAbsolutePath() + "/natives/" + zipFileName)
+
+    if (!zipFile.exists()) {
+        //throw new GradleException("File " + zipFile + " does not exist")
+    }
+
+    // Unpack the Erlang runtime from the .zip file only on version changes
+    def doneMarkerFile = new File(project.buildDir, "./gradle/" + zipFileName + "." + version + "." + arch + ".done")
+    // Use a marker file to check if the unpacking has been done already
+    if (doneMarkerFile.exists()) return
+
+    // Select the right subdirectory expected for a given architecture
+    def archDirName
+    if (arch == "aarch64") archDirName = "arm64-v8a";
+    if (arch == "arm") archDirName = "armeabi-v7a";
+
+    def outputPath = project.getRootDir().getAbsolutePath() + "/app/src/main/jniLibs/" + archDirName + "/"
+    def outputDir = new File(outputPath).getAbsoluteFile()
+    if (!outputDir.exists()) outputDir.mkdirs()
+
+    def mappingsFile = new File(outputDir, "libmappings.so").getAbsoluteFile()
+    if (mappingsFile.exists()) mappingsFile.delete()
+    mappingsFile.createNewFile()
+    def mappingsFileWriter = new BufferedWriter
+            (new OutputStreamWriter(new FileOutputStream(mappingsFile), StandardCharsets.UTF_8))
+
+    def counter = 100
+    new ZipInputStream(new FileInputStream(zipFile)).withCloseable { zipInput ->
+        ZipEntry zipEntry
+        while ((zipEntry = zipInput.getNextEntry()) != null) {
+            if (!zipEntry.isDirectory()) {
+                def soName = "lib" + counter + ".so"
+                def targetFile = new File(outputDir, soName).getAbsoluteFile()
+
+                println "target file path is ${targetFile}"
+
+                try {
+                    transferTo(zipInput, new FileOutputStream(targetFile))
+                } catch (Exception e) {
+                    println "Error ${e}"
+                }
+
+                mappingsFileWriter.writeLine(soName + "←" + zipEntry.getName())
+                counter++
+            }
+        }
+    }
+
+    mappingsFileWriter.close()
+    // Store that the Erlang runtime has been unpacked from the .zip file
+    doneMarkerFile.parentFile.mkdirs()
+    doneMarkerFile.createNewFile()
+}
+
+def transferTo(InputStream input, OutputStream output) throws IOException {
+    def buffer = new byte[8192]
+    int readBytes
+    while ((readBytes = input.read(buffer)) >= 0) {
+        output.write(buffer, 0, readBytes)
+    }
 }

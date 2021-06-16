@@ -2,12 +2,18 @@ package link.infra.sslsocks.service;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
+import android.content.pm.ApplicationInfo;
+import android.os.Build;
+import android.system.Os;
 import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
+import android.content.pm.PackageManager;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.util.regex.Matcher;
@@ -40,27 +46,42 @@ public class StunnelProcessManager {
 		return false;
 	}
 
-	public static void checkAndExtract(Context context) {
-		File execFile = new File(context.getFilesDir().getPath() + "/" + EXECUTABLE);
-		if (execFile.exists() && !hasBeenUpdated(context)) {
-			return; // already extracted
+	public static void prepareStunnel(Context context) throws RuntimeException{
+		ApplicationInfo info = context.getApplicationInfo();
+
+		File filesMappingFile = new File(info.nativeLibraryDir, "libmappings.so");
+		if (!filesMappingFile.exists()) {
+			Log.e("Fragment", "No file mapping at " +
+					filesMappingFile.getAbsolutePath());
+			return;
 		}
 
-		//noinspection ResultOfMethodCallIgnored
-		execFile.getParentFile().mkdir();
+		try{
+			BufferedReader reader =
+					new BufferedReader(new FileReader(filesMappingFile));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				String[] parts = line.split("←");
+				if (parts.length != 2) {
+					Log.e("Fragment", "Malformed line " + line + " in " +
+							filesMappingFile.getAbsolutePath());
+					continue;
+				}
 
-		// Extract stunnel exectuable
-		AssetManager am = context.getAssets();
-		try (BufferedSource in = Okio.buffer(Okio.source(am.open(EXECUTABLE)));
-		     BufferedSink out = Okio.buffer(Okio.sink(execFile))) {
-			out.writeAll(in);
+				String oldPath = info.nativeLibraryDir + "/" + parts[0];
+				String newPath = context.getFilesDir() + "/" + parts[1];
 
-			//noinspection ResultOfMethodCallIgnored
-			execFile.setExecutable(true);
+				File directory = new File(newPath).getParentFile();
+				if (!directory.isDirectory() && !directory.mkdirs()) {
+					throw new RuntimeException("Unable to create directory: " + directory.getAbsolutePath());
+				}
 
-			Log.d(TAG, "Extracted stunnel binary successfully");
+				Log.d("Fragment", "About to setup link: " + oldPath + " ← " + newPath);
+				new File(newPath).delete();
+				Os.symlink(oldPath, newPath);
+			}
 		} catch (Exception e) {
-			Log.e(TAG, "Failed stunnel extraction: ", e);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -90,13 +111,14 @@ public class StunnelProcessManager {
 		if (stunnelProcess != null || pidFile.exists()) {
 			stop(context);
 		}
-		checkAndExtract(context);
+
+		prepareStunnel(context);
 		setupConfig(context);
 		context.clearLog();
 		try {
 			String[] env = new String[0];
 			File workingDirectory = new File(context.getFilesDir().getPath());
-			stunnelProcess = Runtime.getRuntime().exec(context.getFilesDir().getPath() + "/" + EXECUTABLE + " " + CONFIG, env, workingDirectory);
+			stunnelProcess = Runtime.getRuntime().exec(context.getFilesDir().getPath() + "/" + EXECUTABLE  + " " + CONFIG, env, workingDirectory);
 			readInputStream(context, Okio.buffer(Okio.source(stunnelProcess.getErrorStream())));
 			readInputStream(context, Okio.buffer(Okio.source(stunnelProcess.getInputStream())));
 			stunnelProcess.waitFor();
@@ -162,7 +184,7 @@ public class StunnelProcessManager {
 		if (stunnelProcess != null || pidFile.exists()) {
 			stop(context);
 		}
-		checkAndExtract(context);
+		prepareStunnel(context);
 		try {
 			String[] env = new String[0];
 			File workingDirectory = new File(context.getFilesDir().getPath());
