@@ -116,7 +116,9 @@ public class StunnelProcessManager {
 		setupConfig(context);
 		context.clearLog();
 		try {
-			String[] env = new String[0];
+			String[] env = new String[2];
+			env[0] = "OPENSSL_ENGINES=" + context.getFilesDir().getPath();
+			env[1] = "LD_LIBRARY_PATH=" + context.getFilesDir().getPath();
 			File workingDirectory = new File(context.getFilesDir().getPath());
 			stunnelProcess = Runtime.getRuntime().exec(context.getFilesDir().getPath() + "/" + EXECUTABLE  + " " + CONFIG, env, workingDirectory);
 			readInputStream(context, Okio.buffer(Okio.source(stunnelProcess.getErrorStream())));

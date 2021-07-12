@@ -78,7 +78,6 @@ task setup() {
     doLast {
         def version = 1
         setFilesInjniLibs("aarch64", "stunnel_deps_arm64.zip", version)
-        setFilesInjniLibs("arm",     "stunnel_deps_arm64.zip", version)
     }
 }
 
