@@ -1,4 +1,4 @@
-# SSLSocks
+# SSLSocks with smart card support
 ✨ See [this article](https://hamy.io/post/0011/how-to-run-stunnel-on-your-android-device/) by Hamy for an excellent introduction to the app!
 
 **Now released as a beta on Google Play!** https://play.google.com/store/apps/details?id=link.infra.sslsocks
@@ -9,8 +9,11 @@ SSL/TLS tunnel using [stunnel](https://www.stunnel.org/) for Android.
 
 ## Build instructions
 1. Install Android Studio
-1. Download the stunnel android binary from [stunnel.org](https://www.stunnel.org/index.html), and copy it to /app/src/main/assets/stunnel
-1. Build it using Android Studio
+2. Build openssl and stunnel for android (current prebuild bublic versions has some bugs: https://github.com/mtrojnar/stunnel/pull/14)
+3. Create archive with stunnel, openssl, needed pkcs#11 engines, and pkcs#11 modules. WARNING: remove ```lib``` prefix for file with openssl engine (```librtengine.so -> rtengine.so```).
+4. Put this archive to natives folder as stunnel_deps_{arm64,arm}.zip file.
+5. Put all necceserry jars and aar to *app/libs* folder. (https://dev.rutoken.ru/pages/viewpage.action?pageId=54395671)
+6. Build it using Android Studio
 
 ## How to use
 To edit the configuration, tap the top menu then press Config Editor. Then add your settings according to the [stunnel documentation](https://www.stunnel.org/static/stunnel.html). 
@@ -23,6 +26,23 @@ Please note that currently the log is only updated when stunnel stops, so you wi
 Some example configurations are available in the [stunnel documentation](https://www.stunnel.org/static/stunnel.html#EXAMPLES), and more are given below. Many use cases (e.g. tunnelling SSH or SOCKS over HTTPS) require you to run an stunnel server, which you can download from the stunnel website.
 
 The stunnel binary functions as both a server and a client, as long as you put `client = yes` at the top of your config file when you want to use it as a client. This is set by default in the app.
+
+#### Configuration of pkcs11 engine
+Put it inside stunnel conf to use rtengine. More information about configure rtengine you can find [here](https://dev.rutoken.ru/pages/viewpage.action?pageId=89096210)
+
+```
+engine=rtengine
+engineCtrl=pkcs11_path:librtpkcs11ecp.so
+engineDefault=ALL
+```
+
+#### Configuration using of pkcs11 key
+Use [pkcs#11 uri](https://datatracker.ietf.org/doc/html/rfc7512) to specify pkcs11 object as key
+
+```
+engineNum=1
+key=pkcs11:id=E;pin-value=12345678
+```
 
 #### SSH over HTTPS
 ##### Client

@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements KeyFragment.OnLis
 		});
 
 		// attempt extraction in activity, to make service start faster
-		StunnelProcessManager.checkAndExtract(this);
+		StunnelProcessManager.prepareStunnel(this);
 		StunnelProcessManager.setupConfig(this);
 
 		// Create the NotificationChannel, but only on API 26+ because
