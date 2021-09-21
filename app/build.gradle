@@ -1,3 +1,7 @@
+plugins {
+    id 'org.cadixdev.licenser' version '0.6.1'
+}
+
 apply plugin: 'com.android.application'
 
 android {
@@ -57,4 +61,10 @@ dependencies {
     implementation 'com.squareup.okio:okio:2.9.0'
     implementation 'androidx.preference:preference:1.1.1'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+}
+
+license {
+    header = project.file("../COPYING")
+
+    exclude "**/de/blinkt/openvpn/api/**/*"
 }
