@@ -31,6 +31,8 @@ import static link.infra.sslsocks.Constants.PID;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.util.Log;
 
 import androidx.preference.PreferenceManager;
@@ -63,27 +65,23 @@ public class StunnelProcessManager {
 		return false;
 	}
 
-	public static void checkAndExtract(Context context) {
-		File execFile = new File(context.getFilesDir().getPath() + "/" + EXECUTABLE);
-		if (execFile.exists() && !hasBeenUpdated(context)) {
-			return; // already extracted
+	private static String getExecDir(Context context) {
+		String libraryDir = null;
+		try {
+			PackageManager p = context.getPackageManager();
+			libraryDir = p.getApplicationInfo("link.infra.sslsocks", 0).nativeLibraryDir;
+		} catch(PackageManager.NameNotFoundException e) {
+			//
 		}
+		return libraryDir;
+	}
 
-		//noinspection ResultOfMethodCallIgnored
-		execFile.getParentFile().mkdir();
-
-		// Extract stunnel exectuable
-		AssetManager am = context.getAssets();
-		try (BufferedSource in = Okio.buffer(Okio.source(am.open(EXECUTABLE)));
-		     BufferedSink out = Okio.buffer(Okio.sink(execFile))) {
-			out.writeAll(in);
-
-			//noinspection ResultOfMethodCallIgnored
-			execFile.setExecutable(true);
-
-			Log.d(TAG, "Extracted stunnel binary successfully");
-		} catch (Exception e) {
-			Log.e(TAG, "Failed stunnel extraction: ", e);
+	public static void checkStunnel(Context context) throws RuntimeException{
+		File execFile = new File(getExecDir(context) + "/" + EXECUTABLE);
+		if (execFile.exists() && !hasBeenUpdated(context)) {
+			return;
+		} else {
+			throw new RuntimeException("Stunnel app doesn't exists. Move it to app/src/main/jniLibs/${arch} as stunnel.so");
 		}
 	}
 
@@ -113,13 +111,13 @@ public class StunnelProcessManager {
 		if (stunnelProcess != null || pidFile.exists()) {
 			stop(context);
 		}
-		checkAndExtract(context);
+		checkStunnel(context);
 		setupConfig(context);
 		context.clearLog();
 		try {
 			String[] env = new String[0];
 			File workingDirectory = new File(context.getFilesDir().getPath());
-			stunnelProcess = Runtime.getRuntime().exec(context.getFilesDir().getPath() + "/" + EXECUTABLE + " " + CONFIG, env, workingDirectory);
+			stunnelProcess = Runtime.getRuntime().exec(getExecDir(context) + "/" + EXECUTABLE + " " + CONFIG, env, workingDirectory);
 			readInputStream(context, Okio.buffer(Okio.source(stunnelProcess.getErrorStream())));
 			readInputStream(context, Okio.buffer(Okio.source(stunnelProcess.getInputStream())));
 			stunnelProcess.waitFor();
@@ -185,12 +183,12 @@ public class StunnelProcessManager {
 		if (stunnelProcess != null || pidFile.exists()) {
 			stop(context);
 		}
-		checkAndExtract(context);
+		checkStunnel(context);
 		try {
 			String[] env = new String[0];
 			File workingDirectory = new File(context.getFilesDir().getPath());
 			// Make the process fail, so we can extract just the version from the error stream
-			stunnelProcess = Runtime.getRuntime().exec(context.getFilesDir().getPath() + "/" + EXECUTABLE + " THISFILESHOULDNOTEXIST", env, workingDirectory);
+			stunnelProcess = Runtime.getRuntime().exec(getExecDir(context) + "/" + EXECUTABLE + " THISFILESHOULDNOTEXIST", env, workingDirectory);
 			BufferedSource errors = Okio.buffer(Okio.source(stunnelProcess.getErrorStream()));
 
 			Pattern versionPattern = Pattern.compile("stunnel ([\\d.]+)");
