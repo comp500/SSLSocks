@@ -12,6 +12,8 @@ SSL/TLS tunnel using [stunnel](https://www.stunnel.org/) for Android.
 1. Download the stunnel android binary from [stunnel.org](https://www.stunnel.org/index.html), and copy it to /app/src/main/jniLibs/armeabi-v7a/ and /app/src/main/jniLibs/arm64-v8a/ and rename it to stunnel.so
 1. Build it using Android Studio
 
+**IMPORTANT: Do not use local ports less than 1024, Because it requires root permissions in order to listen to ports below 1024.
+
 ## How to use
 To edit the configuration, tap the top menu then press Config Editor. Then add your settings according to the [stunnel documentation](https://www.stunnel.org/static/stunnel.html). 
 
